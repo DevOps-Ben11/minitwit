@@ -71,25 +71,25 @@ func (s *Server) timelineHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) logoutHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World\n This is the timeline"))
+	w.Write([]byte("Hello World\n This is the Logout"))
 }
 func (s *Server) registerHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World\n This is the timeline"))
+	w.Write([]byte("Hello World\n This is the register"))
 }
 func (s *Server) addMessageHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World\n This is the timeline"))
+	w.Write([]byte("Hello World\n This is the add message"))
 }
 func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World\n This is the timeline"))
+	w.Write([]byte("Hello World\n This is the login"))
 }
 func (s *Server) userHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World\n This is the timeline"))
+	w.Write([]byte("Hello World\n This is the user timeline"))
 }
 func (s *Server) userUnfollowHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World\n This is the timeline"))
+	w.Write([]byte("Hello World\n This is the user unfollow"))
 }
 func (s *Server) userFollowHanlder(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World\n This is the timeline"))
+	w.Write([]byte("Hello World\n This is the user follow"))
 }
 func (s *Server) publicHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Hello World\n This is the timeline"))
