@@ -1,0 +1,15 @@
+{{define "layout"}}
+<!doctype html>
+<link rel=stylesheet type=text/css href="../static/style.css">
+<div class=page>
+  <h1>MiniTwit</h1>
+ 
+  <div class=body>
+    {{template "body" .}}
+  </div>
+  
+  <div class=footer>
+    MiniTwit &mdash; A Flask Application
+  </div>
+</div>
+{{end}}
