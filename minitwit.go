@@ -19,7 +19,8 @@ const DEBUG = true
 const SECRET_KEY = "development key"
 
 type Server struct {
-	db *gorm.DB
+	db      *gorm.DB
+	funcMap template.FuncMap
 }
 type User struct {
 	User_id  uint
@@ -48,7 +49,14 @@ func main() {
 		panic("failed to connect database")
 	}
 
-	s := Server{db: db}
+	funcMap := template.FuncMap{
+		"UrlFor":             UrlFor,
+		"GetFlashedMessages": GetFlashedMessages,
+		"Gravatar":           Gravatar,
+		"Datetimeformat":     Datetimeformat,
+	}
+
+	s := Server{db: db, funcMap: funcMap}
 	r.HandleFunc("/public", s.publicHandler)
 	r.HandleFunc("/login", s.loginHandler)
 	r.HandleFunc("/{username}/follow", s.userFollowHanlder)
@@ -89,10 +97,18 @@ func (s *Server) addMessageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
-	// https://stackoverflow.com/a/11468132
-	tmpl := make(map[string]*template.Template)
-	tmpl["login.html"] = template.Must(template.ParseFiles("gotemplates/login.html", "gotemplates/layout.html"))
-	tmpl["login.html"].ExecuteTemplate(w, "layout", nil)
+	t, err := template.New("layout.html").Funcs(s.funcMap).ParseFiles("gotemplates/layout.html", "gotemplates/login.html")
+	if err != nil {
+		log.Println("Error creating template:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if err = t.Execute(w, nil); err != nil {
+		log.Println("Error rendering frontend:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 }
 
 func (s *Server) userHandler(w http.ResponseWriter, r *http.Request) {
@@ -105,5 +121,68 @@ func (s *Server) userFollowHanlder(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Hello World\n This is the user follow"))
 }
 func (s *Server) publicHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World\n This is the timeline"))
+	t, err := template.New("layout.html").Funcs(s.funcMap).ParseFiles("gotemplates/layout.html", "gotemplates/timeline.html")
+	if err != nil {
+		log.Println("Error creating template:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	var messages []RenderMessage
+	err = s.db.Raw(
+		"select message.*, user.* from message, user where message.flagged = 0 and message.author_id = user.user_id order by message.pub_date desc limit ?",
+		PER_PAGE).Scan(&messages).Error
+
+	if err != nil {
+		log.Println("Error getting messages:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	data := Data{
+		Request:  RenderRequest{Endpoint: "public"},
+		Messages: messages,
+		User:     nil,
+	}
+
+	if err = t.Execute(w, data); err != nil {
+		log.Println("Error rendering frontend:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}
+
+func UrlFor(path string, arg string) string {
+	return ""
+}
+
+type FlashMessage struct {
+	Message string
+}
+
+func GetFlashedMessages() []FlashMessage {
+	return []FlashMessage{FlashMessage{Message: "Hello"}}
+}
+
+func Gravatar(size int, name string) string {
+	return fmt.Sprintf("https://gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=%d", size)
+}
+
+func Datetimeformat(date int64) string {
+	return "16 Nov 22:24"
+}
+
+type RenderMessage struct {
+	Message
+	User
+}
+
+type RenderRequest struct {
+	Endpoint string
+}
+
+type Data struct {
+	User     *User
+	Messages []RenderMessage
+	Request  RenderRequest
 }

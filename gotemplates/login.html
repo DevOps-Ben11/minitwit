@@ -1,6 +1,7 @@
-{{define "body"}}
+{{ define "title" }}Sign In{{ end }}
+{{ define "body" }}
   <h2>Sign In</h2>
-  
+  {{ if .Error }}<div class=error><strong>Error:</strong> {{ .Error }}</div>{{ end }}
   <form action="" method=post>
     <dl>
       <dt>Username:
@@ -10,5 +11,4 @@
     </dl>
     <div class=actions><input type=submit value="Sign In"></div>
   </form>
-{{end}}
-
+{{ end }}

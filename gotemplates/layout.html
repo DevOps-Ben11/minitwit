@@ -1,15 +1,30 @@
-{{define "layout"}}
 <!doctype html>
+<title>{{ block "title" .}}Welcome{{ end }} | MiniTwit</title>
 <link rel=stylesheet type=text/css href="../static/style.css">
 <div class=page>
   <h1>MiniTwit</h1>
- 
-  <div class=body>
-    {{template "body" .}}
+  <div class=navigation>
+    {{ if .User }}
+    <a href="{{ UrlFor "timeline" "" }}">my timeline</a> |
+    <a href="{{ UrlFor "public_timeline" "" }}">public timeline</a> |
+    <a href="{{ UrlFor "logout" "" }}">sign out [{{ .User.Username }}]</a>
+  {{ else }}
+    <a href="{{ UrlFor "public_timeline" "" }}">public timeline</a> |
+    <a href="{{ UrlFor "register" "" }}">sign up</a> |
+    <a href="{{ UrlFor "login" "" }}">sign in</a>
+  {{ end }}
   </div>
-  
+    {{ with GetFlashedMessages }}
+      <ul class=flashes>
+      {{ range . }}
+        <li>{{ .Message }}
+      {{ end }}
+      </ul>
+  {{ end }}
+  <div class=body>
+  {{ block "body" . }}{{ end }}
+  </div>
   <div class=footer>
-    MiniTwit &mdash; A Flask Application
+    MiniTwit &mdash; A Go Application
   </div>
 </div>
-{{end}}
