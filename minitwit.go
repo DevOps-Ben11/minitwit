@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"html/template"
@@ -64,7 +65,7 @@ func main() {
 	r.HandleFunc("/public", s.publicHandler)
 	r.HandleFunc("/login", s.loginHandler)
 	r.HandleFunc("/add_message", s.addMessageHandler)
-	r.HandleFunc("/register", s.registerHandlerGet).Methods("Get")
+	r.HandleFunc("/register", s.registerHandler)
 	r.HandleFunc("/logout", s.logoutHandler)
 	r.HandleFunc("/{username}/follow", s.userFollowHanlder)
 	r.HandleFunc("/{username}/unfollow", s.userUnfollowHandler)
@@ -102,16 +103,124 @@ func (s *Server) timelineHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) logoutHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World\n This is the Logout"))
+	session, err := store.Get(r, "auth")
+	if err != nil {
+		log.Println("Error getting session:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	for k := range session.Values {
+		delete(session.Values, k)
+	}
+	err = session.Save(r, w)
+	if err != nil {
+		log.Println("Error loggin out:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, UrlFor("public_timeline", ""), http.StatusFound)
 }
-func (s *Server) registerHandlerGet(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World\n This is the register"))
+func (s *Server) registerHandler(w http.ResponseWriter, r *http.Request) {
+	user, ok := s.GetCurrentUser(r)
+	if ok || user != nil {
+		http.Redirect(w, r, UrlFor("timeline", ""), http.StatusFound)
+		return
+	}
+	var error *string = nil
+	if r.Method == "POST" {
+		err := r.ParseForm()
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+		}
+		vals := r.PostForm
+		if !vals.Has("username") {
+			s := "You have to enter a username"
+			error = &s
+		} else if !vals.Has("email") || !strings.Contains(vals.Get("email"), "@") {
+			s := "You have to enter a valid email address"
+			error = &s
+		} else if !vals.Has("password") {
+			s := "You have to enter a password"
+			error = &s
+		} else if vals.Get("password") != vals.Get("password2") {
+			s := "The two passwords do not match"
+			error = &s
+		} else if s.GetUserId(vals.Get("username")) != 0 {
+			s := "The user is already taken"
+			error = &s
+		} else {
+			err := s.db.Exec("insert into user (username, email, pw_hash) values (?, ?, ?)",
+				vals.Get("username"), vals.Get("email"), GeneratePasswordHash(vals.Get("password"))).Error
+			if err != nil {
+				log.Println("Error creating user:", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			// TODO Flash some message
+			http.Redirect(w, r, UrlFor("login", ""), http.StatusFound)
+			return
+		}
+	}
+	data := Data{
+		Error:   error,
+		Request: RenderRequest{Endpoint: "register"},
+	}
+	t, err := template.New("layout.html").Funcs(s.funcMap).ParseFiles("gotemplates/layout.html", "gotemplates/register.html")
+	if err != nil {
+		log.Println("Error creating template:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if err = t.Execute(w, data); err != nil {
+		log.Println("Error rendering frontend:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 }
 func (s *Server) addMessageHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Hello World\n This is the add message"))
 }
 
 func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
+
+	u, ok := s.GetCurrentUser(r)
+	if ok || u != nil {
+		http.Redirect(w, r, UrlFor("timeline", ""), http.StatusFound)
+		return
+	}
+	var error *string = nil
+	if r.Method == "POST" {
+		err := r.ParseForm()
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+		}
+		vals := r.PostForm
+		user, ok := s.GetUser(vals.Get("username"))
+		if !ok || user == nil {
+			s := "Invalid username"
+			error = &s
+		} else if !CheckPassword(vals.Get("password"), user.Pw_hash) {
+			s := "Invalid password"
+			error = &s
+		} else {
+			session, err := store.Get(r, "auth")
+			if err != nil {
+				log.Println("Error getting session:", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			session.Values["user"] = user.User_id
+			err = session.Save(r, w)
+			if err != nil {
+				log.Println("Error logging in:", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			http.Redirect(w, r, UrlFor("timeline", ""), http.StatusFound)
+		}
+	}
+
 	t, err := template.New("layout.html").Funcs(s.funcMap).ParseFiles("gotemplates/layout.html", "gotemplates/login.html")
 	if err != nil {
 		log.Println("Error creating template:", err)
@@ -119,7 +228,12 @@ func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = t.Execute(w, nil); err != nil {
+	data := Data{
+		Request: RenderRequest{Endpoint: "login"},
+		Error:   error,
+	}
+
+	if err = t.Execute(w, data); err != nil {
 		log.Println("Error rendering frontend:", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -180,10 +294,12 @@ func (s *Server) publicHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user, _ := s.GetCurrentUser(r)
+
 	data := Data{
 		Request:  RenderRequest{Endpoint: "public"},
 		Messages: messages,
-		User:     nil,
+		User:     user,
 	}
 
 	s.RenderTimeline(w, data)
@@ -219,6 +335,8 @@ func UrlFor(path string, arg string) string {
 		return "/register"
 	case "login":
 		return "/login"
+	case "logout":
+		return "/logout"
 	default:
 		return "/"
 	}
@@ -243,6 +361,34 @@ func (s *Server) GetCurrentUser(r *http.Request) (user *User, ok bool) {
 		return nil, false
 	}
 	return user, true
+}
+
+// Returns 0 if none found
+func (s *Server) GetUserId(username string) uint {
+	var u uint
+	err := s.db.Raw("select user_id from user where username = ?", username).Scan(&u).Error
+	if err != nil {
+		return 0
+	}
+	return u
+}
+
+func (s *Server) GetUser(username string) (*User, bool) {
+	var u *User
+	err := s.db.Raw("select * from user where username = ?", username).Scan(&u).Error
+	if err != nil || u == nil {
+		return nil, false
+	}
+	return u, true
+}
+
+// TODO
+func GeneratePasswordHash(password string) string {
+	return password
+}
+
+func CheckPassword(password string, password_hash string) bool {
+	return password == password_hash
 }
 
 type FlashMessage struct {
