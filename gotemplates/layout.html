@@ -14,7 +14,7 @@
     <a href="{{ UrlFor "login" "" }}">sign in</a>
   {{ end }}
   </div>
-    {{ with GetFlashedMessages }}
+    {{ with .Flashes }}
       <ul class=flashes>
       {{ range . }}
         <li>{{ .Message }}

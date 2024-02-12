@@ -98,6 +98,7 @@ func (s *Server) timelineHandler(w http.ResponseWriter, r *http.Request) {
 		User:     user,
 		Messages: messages,
 		Request:  RenderRequest{Endpoint: "timeline"},
+		Flashes:  GetFlashedMessages(w, r),
 	}
 	s.RenderTimeline(w, data)
 }
@@ -157,6 +158,7 @@ func (s *Server) registerHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			// TODO Flash some message
+			PushFlashMessage(w, r, "You were successfully registered and can login now")
 			http.Redirect(w, r, UrlFor("login", ""), http.StatusFound)
 			return
 		}
@@ -164,6 +166,7 @@ func (s *Server) registerHandler(w http.ResponseWriter, r *http.Request) {
 	data := Data{
 		Error:   error,
 		Request: RenderRequest{Endpoint: "register"},
+		Flashes: GetFlashedMessages(w, r),
 	}
 	t, err := template.New("layout.html").Funcs(s.funcMap).ParseFiles("gotemplates/layout.html", "gotemplates/register.html")
 	if err != nil {
@@ -231,6 +234,7 @@ func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 	data := Data{
 		Request: RenderRequest{Endpoint: "login"},
 		Error:   error,
+		Flashes: GetFlashedMessages(w, r),
 	}
 
 	if err = t.Execute(w, data); err != nil {
@@ -273,6 +277,7 @@ func (s *Server) userHandler(w http.ResponseWriter, r *http.Request) {
 		Messages: messages,
 		Request:  RenderRequest{Endpoint: "user_timeline"},
 		Followed: followed,
+		Flashes:  GetFlashedMessages(w, r),
 	}
 	s.RenderTimeline(w, data)
 }
@@ -300,6 +305,7 @@ func (s *Server) publicHandler(w http.ResponseWriter, r *http.Request) {
 		Request:  RenderRequest{Endpoint: "public"},
 		Messages: messages,
 		User:     user,
+		Flashes:  GetFlashedMessages(w, r),
 	}
 
 	s.RenderTimeline(w, data)
@@ -395,8 +401,34 @@ type FlashMessage struct {
 	Message string
 }
 
-func GetFlashedMessages() []FlashMessage {
-	return []FlashMessage{FlashMessage{Message: "Hello"}}
+func PushFlashMessage(w http.ResponseWriter, r *http.Request, message string) {
+	session, err := store.Get(r, "auth")
+	if err != nil {
+		return
+	}
+	session.AddFlash(message)
+	session.Save(r, w)
+}
+
+func GetFlashedMessages(w http.ResponseWriter, r *http.Request) []FlashMessage {
+	session, err := store.Get(r, "auth")
+	if err != nil {
+		return []FlashMessage{}
+	}
+	flashes := session.Flashes()
+	log.Println(len(flashes))
+	messages := []FlashMessage{}
+	for _, v := range flashes {
+		messages = append(messages, FlashMessage{Message: v.(string)})
+	}
+	err = session.Save(r, w)
+	log.Println("After save")
+	flashes = session.Flashes()
+	log.Println(len(flashes))
+	if err != nil {
+		log.Println("Error flash:", err)
+	}
+	return messages
 }
 
 func Gravatar(size int, name string) string {
@@ -428,4 +460,5 @@ type Data struct {
 	Request  RenderRequest
 	Followed bool
 	Error    *string
+	Flashes  []FlashMessage
 }
