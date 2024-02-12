@@ -416,15 +416,11 @@ func GetFlashedMessages(w http.ResponseWriter, r *http.Request) []FlashMessage {
 		return []FlashMessage{}
 	}
 	flashes := session.Flashes()
-	log.Println(len(flashes))
 	messages := []FlashMessage{}
 	for _, v := range flashes {
 		messages = append(messages, FlashMessage{Message: v.(string)})
 	}
 	err = session.Save(r, w)
-	log.Println("After save")
-	flashes = session.Flashes()
-	log.Println(len(flashes))
 	if err != nil {
 		log.Println("Error flash:", err)
 	}
