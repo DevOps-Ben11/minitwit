@@ -283,7 +283,28 @@ func (s *Server) userHandler(w http.ResponseWriter, r *http.Request) {
 	s.RenderTimeline(w, data)
 }
 func (s *Server) userUnfollowHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World\n This is the user unfollow"))
+	user, ok := s.GetCurrentUser(r)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	vars := mux.Vars(r)
+	profil := vars["username"]
+	profilId := s.GetUserId(profil)
+	if profilId == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	err := s.db.Exec("delete from follower where who_id=? and whom_id=?", user.User_id, profilId).Error
+
+	if err!=nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Println("Error following user", err)
+		return
+	}
+
+	PushFlashMessage(w, r, fmt.Sprintf("You are no longer following /%s/", profil))
+	http.Redirect(w, r, UrlFor("user_timeline", profil), http.StatusFound)
 }
 func (s *Server) userFollowHanlder(w http.ResponseWriter, r *http.Request) {
 	user, ok := s.GetCurrentUser(r)
