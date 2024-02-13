@@ -119,6 +119,7 @@ func (s *Server) logoutHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	PushFlashMessage(w, r, "You were logged out")
 	http.Redirect(w, r, UrlFor("public_timeline", ""), http.StatusFound)
 }
 func (s *Server) registerHandler(w http.ResponseWriter, r *http.Request) {
@@ -157,7 +158,6 @@ func (s *Server) registerHandler(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-			// TODO Flash some message
 			PushFlashMessage(w, r, "You were successfully registered and can login now")
 			http.Redirect(w, r, UrlFor("login", ""), http.StatusFound)
 			return
@@ -220,6 +220,7 @@ func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
+			PushFlashMessage(w, r, "You were logged in")
 			http.Redirect(w, r, UrlFor("timeline", ""), http.StatusFound)
 		}
 	}
