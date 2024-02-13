@@ -74,6 +74,7 @@ def test_register():
     r = register('meh', 'foo', email='broken')
     assert 'You have to enter a valid email address' in r.text
 
+# Working
 def test_login_logout():
     """Make sure logging in and logging out works"""
     r, http_session = register_and_login('user1', 'default')
@@ -85,6 +86,7 @@ def test_login_logout():
     r, _ = login('user2', 'wrongpassword')
     assert 'Invalid username' in r.text
 
+# Working
 def test_message_recording():
     """Check if adding messages works"""
     _, http_session = register_and_login('foo', 'default')
@@ -94,6 +96,7 @@ def test_message_recording():
     assert 'test message 1' in r.text
     assert '&lt;test message 2&gt;' in r.text
 
+# Working
 def test_timelines():
     """Make sure that timelines work"""
     _, http_session = register_and_login('foo', 'default')
@@ -134,4 +137,7 @@ def test_timelines():
     assert 'the message by foo' not in r.text
     assert 'the message by bar' in r.text
 
-test_register()
+# test_register()
+# test_login_logout()
+# test_message_recording()
+# test_timelines()

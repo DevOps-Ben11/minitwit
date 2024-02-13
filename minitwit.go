@@ -338,7 +338,7 @@ func (s *Server) userUnfollowHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	PushFlashMessage(w, r, fmt.Sprintf("You are no longer following /%s/", profil))
+	PushFlashMessage(w, r, fmt.Sprintf("You are no longer following \"%s\"", profil))
 	http.Redirect(w, r, UrlFor("user_timeline", profil), http.StatusFound)
 }
 func (s *Server) userFollowHanlder(w http.ResponseWriter, r *http.Request) {
@@ -362,7 +362,7 @@ func (s *Server) userFollowHanlder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	PushFlashMessage(w, r, fmt.Sprintf("You are now following /%s/", profil))
+	PushFlashMessage(w, r, fmt.Sprintf("You are now following \"%s\"", profil))
 	http.Redirect(w, r, UrlFor("user_timeline", profil), http.StatusFound)
 }
 func (s *Server) publicHandler(w http.ResponseWriter, r *http.Request) {
