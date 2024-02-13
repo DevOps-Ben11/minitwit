@@ -11,6 +11,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -297,7 +298,7 @@ func (s *Server) userUnfollowHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	err := s.db.Exec("delete from follower where who_id=? and whom_id=?", user.User_id, profilId).Error
 
-	if err!=nil {
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Println("Error following user", err)
 		return
@@ -321,7 +322,7 @@ func (s *Server) userFollowHanlder(w http.ResponseWriter, r *http.Request) {
 	}
 	err := s.db.Exec("insert into follower (who_id, whom_id) values (?, ?)", user.User_id, profilId).Error
 
-	if err!=nil {
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Println("Error following user", err)
 		return
@@ -433,11 +434,13 @@ func (s *Server) GetUser(username string) (*User, bool) {
 
 // TODO
 func GeneratePasswordHash(password string) string {
-	return password
+	bytes, _ := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes)
 }
 
 func CheckPassword(password string, password_hash string) bool {
-	return password == password_hash
+	err := bcrypt.CompareHashAndPassword([]byte(password_hash), []byte(password))
+	return err == nil
 }
 
 type FlashMessage struct {
