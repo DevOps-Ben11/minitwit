@@ -9,6 +9,7 @@ import (
 
 	"html/template"
 
+	"github.com/eefret/gravatar"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"golang.org/x/crypto/bcrypt"
@@ -509,8 +510,16 @@ func GetFlashedMessages(w http.ResponseWriter, r *http.Request) []FlashMessage {
 	return messages
 }
 
-func Gravatar(size int, name string) string {
-	return fmt.Sprintf("https://gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=%d", size)
+func Gravatar(size int, email string) string {
+	g, err := gravatar.New()
+	if err != nil {
+		log.Print("Error in fetching gravatar", err)
+		return fmt.Sprintf("https://www.gravatar.com/avatar?s=%d", size)
+	}
+
+	g.SetSize(uint(size))
+	log.Println(email)
+	return g.URLParse(strings.TrimSpace(strings.ToLower(email))) + "&d=identicon"
 }
 
 func Datetimeformat(date int64) string {

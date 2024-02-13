@@ -1,3 +1,5 @@
+github.com/eefret/gravatar v0.0.0-20181201135945-2163a437cdca h1:/TWtZ2uoqCDO75tv7qcfXQW25VotvK7H0LQRO3xJt70=
+github.com/eefret/gravatar v0.0.0-20181201135945-2163a437cdca/go.mod h1:INXlE8NSNzQOzkK8ycoVKV8V+zQi70Ms3Bx/KyOuYgs=
 github.com/gorilla/mux v1.8.1 h1:TuBL49tXwgrFYWhqrNgrUNEY92u81SPhu7sTdzQEiWY=
 github.com/gorilla/mux v1.8.1/go.mod h1:AKf9I4AEqPTmMytcMc0KkNouC66V3BtZ4qD5fmWSiMQ=
 github.com/gorilla/securecookie v1.1.2 h1:YCIWL56dvtr73r6715mJs5ZvhtnY73hBvEF8kXD8ePA=
