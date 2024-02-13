@@ -136,20 +136,20 @@ func (s *Server) registerHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 		}
 		vals := r.PostForm
-		if !vals.Has("username") {
+		if !vals.Has("username") || len(vals.Get("username")) == 0 {
 			s := "You have to enter a username"
 			error = &s
 		} else if !vals.Has("email") || !strings.Contains(vals.Get("email"), "@") {
 			s := "You have to enter a valid email address"
 			error = &s
-		} else if !vals.Has("password") {
+		} else if !vals.Has("password") || len(vals.Get("password")) == 0 {
 			s := "You have to enter a password"
 			error = &s
 		} else if vals.Get("password") != vals.Get("password2") {
 			s := "The two passwords do not match"
 			error = &s
 		} else if s.GetUserId(vals.Get("username")) != 0 {
-			s := "The user is already taken"
+			s := "The username is already taken"
 			error = &s
 		} else {
 			err := s.db.Exec("insert into user (username, email, pw_hash) values (?, ?, ?)",
