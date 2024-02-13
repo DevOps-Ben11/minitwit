@@ -37,7 +37,7 @@
   {{ end }}
   <ul class=messages>
   {{ range .Messages }}
-    <li><img src="{{ .Username | Gravatar 48 }}"><p>
+    <li><img src="{{ .Email | Gravatar 48 }}"><p>
       <strong><a href="{{ UrlFor "user_timeline" .Username}}">
         {{ .Username }}</a></strong>
       {{ .Text }}
