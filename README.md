@@ -1,4 +1,5 @@
 # ITU MiniTwit WEB application
+http://64.226.68.241:8080/public
 
 Refactored Python Flask WEB application to Go.
 
