@@ -16,7 +16,7 @@ func (s *Server) InitRoutes() error {
 
 type Handler func(vars map[string]string, r *http.Request) (status int, value any)
 
-func (s *Server) Get(route string, handler Handler) {
+func (s *Server) Handle(route string, handler Handler, method string) {
 	f := func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -31,27 +31,16 @@ func (s *Server) Get(route string, handler Handler) {
 		w.Write(returnValue)
 	}
 
-	s.r.HandleFunc(route, f).Methods("GET")
+	s.r.HandleFunc(route, f).Methods(method)
+
+}
+
+func (s *Server) Get(route string, handler Handler) {
+	s.Handle(route, handler, "GET")
 }
 
 func (s *Server) Post(route string, handler Handler) {
-	f := func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-
-		status, value := handler(vars, r)
-
-		returnValue, err := json.Marshal(value)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(status)
-		w.Write(returnValue)
-	}
-
-	s.r.HandleFunc(route, f).Methods("POST")
+	s.Handle(route, handler, "POST")
 }
 
 func DecodeBody(body io.ReadCloser, v any) error {
