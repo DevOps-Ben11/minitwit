@@ -1,21 +1,21 @@
 package model
 
 type User struct {
-	ID       uint
+	User_id  uint `gorm:"primaryKey"`
 	Username string
 	Email    string
-	Password string
+	Pw_hash  string
+}
+
+type Message struct {
+	Message_id uint `gorm:"primaryKey"`
+	Author_id  uint
+	Text       string
+	Pub_date   int64 `gorm:"autoCreateTime:milli"`
+	Flagged    bool
 }
 
 type Follower struct {
 	Who_id  uint
 	Whom_id uint
-}
-
-type Message struct {
-	ID       uint
-	UserID   uint
-	Text     string
-	Pub_date int64 `gorm:"autoCreateTime:milli"`
-	Flagged  bool
 }
