@@ -10,19 +10,17 @@ import (
 
 func (s *Server) InitRoutes() error {
 
-	s.Get("/test/{name}", s.TestHandler)
-	s.Post("/test", s.TestPostHandler)
+	s.Get("/latest", s.LatestHandler)
 	return nil
 }
 
-type GetHandler func(vars map[string]string) (status int, value any)
-type PostHandler func(vars map[string]string, body io.ReadCloser) (status int, value any)
+type Handler func(vars map[string]string, r *http.Request) (status int, value any)
 
-func (s *Server) Get(route string, handler GetHandler) {
+func (s *Server) Get(route string, handler Handler) {
 	f := func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		status, value := handler(vars)
+		status, value := handler(vars, r)
 
 		returnValue, err := json.Marshal(value)
 		if err != nil {
@@ -36,11 +34,11 @@ func (s *Server) Get(route string, handler GetHandler) {
 	s.r.HandleFunc(route, f).Methods("GET")
 }
 
-func (s *Server) Post(route string, handler PostHandler) {
+func (s *Server) Post(route string, handler Handler) {
 	f := func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		status, value := handler(vars, r.Body)
+		status, value := handler(vars, r)
 
 		returnValue, err := json.Marshal(value)
 		if err != nil {

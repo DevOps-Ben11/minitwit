@@ -2,8 +2,8 @@ package server
 
 import (
 	"fmt"
-	"io"
 	"log"
+	"net/http"
 
 	"github.com/DevOps-Ben11/minitwit/backend/model"
 )
@@ -12,7 +12,7 @@ type TestMsg struct {
 	Msg string `json:"msg"`
 }
 
-func (s *Server) TestHandler(vars map[string]string) (status int, value any) {
+func (s *Server) TestHandler(vars map[string]string, r *http.Request) (status int, value any) {
 	name := vars["name"]
 	msg := fmt.Sprintf("Hello %s!", name)
 	s.db.Create(&model.Example{
@@ -22,10 +22,15 @@ func (s *Server) TestHandler(vars map[string]string) (status int, value any) {
 	return OkResponse(TestMsg{Msg: msg})
 }
 
-func (s *Server) TestPostHandler(vars map[string]string, body io.ReadCloser) (status int, value any) {
+func (s *Server) TestPostHandler(vars map[string]string, r *http.Request) (status int, value any) {
 	var data TestMsg
-	DecodeBody(body, &data)
+	DecodeBody(r.Body, &data)
 	log.Println("Got message!")
 	log.Println(data.Msg)
 	return OkResponse(nil)
+}
+
+func (s *Server) LatestHandler(vars map[string]string, r *http.Request) (status int, value any) {
+
+	return 404, nil
 }
