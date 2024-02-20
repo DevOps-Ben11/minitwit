@@ -11,6 +11,12 @@ import (
 func (s *Server) InitRoutes() error {
 
 	s.Get("/latest", s.LatestHandler)
+	s.Post("/register", s.RegisterHandler)
+	s.Get("/msgs/{username}", s.GetUserMsgsHandler)
+	s.Post("/msgs/{username}", s.PostUserMsgsHandler)
+	s.Get("/msgs", s.MsgsHandler)
+	s.Get("/fllws/{username}", s.GetUserFollowsHandler)
+	s.Post("/fllws/{username}", s.PostUserFollowsHandler)
 	return nil
 }
 

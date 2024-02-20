@@ -34,3 +34,37 @@ func (s *Server) LatestHandler(vars map[string]string, r *http.Request) (status 
 
 	return 404, nil
 }
+
+func (s *Server) RegisterHandler(vars map[string]string, r *http.Request) (status int, value any) {
+
+	return 404, nil
+}
+
+func (s *Server) MsgsHandler(vars map[string]string, r *http.Request) (status int, value any) {
+
+	return 404, nil
+}
+
+func (s *Server) GetUserMsgsHandler(vars map[string]string, r *http.Request) (status int, value any) {
+	username := vars["username"]
+
+	return 404, username
+}
+
+func (s *Server) PostUserMsgsHandler(vars map[string]string, r *http.Request) (status int, value any) {
+	username := vars["username"]
+
+	return 404, username
+}
+
+func (s *Server) GetUserFollowsHandler(vars map[string]string, r *http.Request) (status int, value any) {
+	username := vars["username"]
+
+	return 404, username
+}
+
+func (s *Server) PostUserFollowsHandler(vars map[string]string, r *http.Request) (status int, value any) {
+	username := vars["username"]
+
+	return 404, username
+}
