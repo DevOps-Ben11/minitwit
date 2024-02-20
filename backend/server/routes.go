@@ -11,12 +11,21 @@ import (
 func (s *Server) InitRoutes() error {
 
 	s.Get("/latest", s.LatestHandler)
-	s.Post("/register", s.RegisterHandler)
+
+	specificRoute := s.r.HandleFunc("/specific-path", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("This is a specific path with middleware applied.\n"))
+	})
+	specificRoute.Handler(s.auth(specificRoute.GetHandler())).Methods("GET")
+
+	s.Post("/register", s.auth(s.RegisterHandler))
+	s.Post("/sim/register", s.RegisterSimHandler)
+
 	s.Get("/msgs/{username}", s.GetUserMsgsHandler)
 	s.Post("/msgs/{username}", s.PostUserMsgsHandler)
 	s.Get("/msgs", s.MsgsHandler)
 	s.Get("/fllws/{username}", s.GetUserFollowsHandler)
 	s.Post("/fllws/{username}", s.PostUserFollowsHandler)
+
 	return nil
 }
 
@@ -38,7 +47,6 @@ func (s *Server) Handle(route string, handler Handler, method string) {
 	}
 
 	s.r.HandleFunc(route, f).Methods(method)
-
 }
 
 func (s *Server) Get(route string, handler Handler) {

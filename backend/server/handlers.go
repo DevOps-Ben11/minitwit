@@ -37,6 +37,42 @@ func (s *Server) LatestHandler(vars map[string]string, r *http.Request) (status 
 
 func (s *Server) RegisterHandler(vars map[string]string, r *http.Request) (status int, value any) {
 
+	// // We have to deal with the user here, so we check that data entered are right (We don't have to this for the simulation)
+	// var error *string = nil
+	// vals := r.PostForm
+	// if !vals.Has("username") || len(vals.Get("username")) == 0 {
+	// 	s := "You have to enter a username"
+	// 	error = &s
+	// } else if !vals.Has("email") || !strings.Contains(vals.Get("email"), "@") {
+	// 	s := "You have to enter a valid email address"
+	// 	error = &s
+	// } else if !vals.Has("password") || len(vals.Get("password")) == 0 {
+	// 	s := "You have to enter a password"
+	// 	error = &s
+	// } else if vals.Get("password") != vals.Get("password2") {
+	// 	s := "The two passwords do not match"
+	// 	error = &s
+	// }
+
+	// if error != nil {
+	// 	// send flash and stop the process because data is wrong, TODO Matteo
+	// }
+
+	// // Now we know that data are right, we can ask to register in the db
+	// registerInDBResult := repository.registerDB(s, vals.Get("username"), vals.Get("email"), vals.Get("password"))
+	// if registerInDBResult != nil {
+	// 	// send flash and stop the process because data is wrong, TODO Matteo
+	// }
+
+	// // Now know that user has been registered and we should update/return template
+	// utill.PushFlashMessage(w, r, "You were successfully registered and can login now")
+	// http.Redirect(w, r, UrlFor("login", ""), http.StatusFound)
+
+	return 404, nil
+}
+
+func (s *Server) RegisterSimHandler(vars map[string]string, r *http.Request) (status int, value any) {
+
 	return 404, nil
 }
 

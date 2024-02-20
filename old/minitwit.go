@@ -67,7 +67,9 @@ func main() {
 	r.HandleFunc("/public", s.publicHandler)
 	r.HandleFunc("/login", s.loginHandler)
 	r.HandleFunc("/add_message", s.addMessageHandler)
+
 	r.HandleFunc("/register", s.registerHandler)
+
 	r.HandleFunc("/logout", s.logoutHandler)
 	r.HandleFunc("/{username}/follow", s.userFollowHanlder)
 	r.HandleFunc("/{username}/unfollow", s.userUnfollowHandler)
