@@ -1,21 +1,38 @@
 package repository
 
 import (
-	"errors"
-
-	"github.com/DevOps-Ben11/minitwit/backend/server"
-	"github.com/DevOps-Ben11/minitwit/backend/utill"
+	"github.com/DevOps-Ben11/minitwit/backend/model"
+	"github.com/DevOps-Ben11/minitwit/backend/util"
+	"gorm.io/gorm"
 )
 
-func registerDB(s server.Server, username string, email string, password string) error {
-	if s.GetUserId(username) != 0 {
-		errors.New("The username is already taken")
+type Repository interface {
+	GetUser(username string) (*model.User, bool)
+	InsertUser(username string, email string, password string) error
+}
 
-	}
-	err := s.db.Exec("insert into user (username, email, pw_hash) values (?, ?, ?)", username, email, utill.GeneratePasswordHash(password)).Error
+type repository struct {
+	db *gorm.DB
+}
 
-	if err != nil {
-		panic("AAAAAH!!!!")
+func CreateRepository(db *gorm.DB) Repository {
+	return &repository{db: db}
+}
+
+func (repo *repository) GetUser(username string) (*model.User, bool) {
+	var user *model.User
+
+	err := repo.db.Raw("SELECT * FROM user WHERE username = ?", username).Scan(&user).Error
+
+	if err != nil || user == nil {
+		return nil, false
 	}
-	return nil
+
+	return user, true
+}
+
+func (repo *repository) InsertUser(username string, email string, password string) error {
+	return repo.db.Exec("INSERT INTO user (username, email, pw_hash) VALUES (?, ?, ?)",
+		username, email, util.GeneratePasswordHash(password),
+	).Error
 }
