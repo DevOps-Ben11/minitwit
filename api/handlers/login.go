@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"text/template"
 
-	"github.com/DevOps-Ben11/minitwit/backend/model"
-	"github.com/DevOps-Ben11/minitwit/backend/repository"
-	"github.com/DevOps-Ben11/minitwit/backend/util"
+	"github.com/DevOps-Ben11/minitwit/api/model"
+	"github.com/DevOps-Ben11/minitwit/api/repository"
+	"github.com/DevOps-Ben11/minitwit/api/util"
 )
 
 type Login struct {
@@ -66,7 +66,7 @@ func (h *Login) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	t, err := template.New("layout.html").Funcs(util.GetFuncMap()).ParseFiles("web/templates/layout.html", "web/templates/login.html")
+	t, err := template.New("layout.html").Funcs(util.GetFuncMap()).ParseFiles("../web/templates/layout.html", "../web/templates/login.html")
 
 	if err != nil {
 		log.Println("Error creating template:", err)

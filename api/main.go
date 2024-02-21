@@ -5,10 +5,10 @@ import (
 	"log"
 	"net/http"
 
-	handler "github.com/DevOps-Ben11/minitwit/backend/handlers"
-	mw "github.com/DevOps-Ben11/minitwit/backend/middlewares"
-	"github.com/DevOps-Ben11/minitwit/backend/model"
-	"github.com/DevOps-Ben11/minitwit/backend/repository"
+	handler "github.com/DevOps-Ben11/minitwit/api/handlers"
+	mw "github.com/DevOps-Ben11/minitwit/api/middlewares"
+	"github.com/DevOps-Ben11/minitwit/api/model"
+	"github.com/DevOps-Ben11/minitwit/api/repository"
 	"github.com/gorilla/mux"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -61,15 +61,19 @@ func (s *Server) InitRoutes() error {
 	repo := repository.CreateRepository(s.db)
 	rH := handler.CreateRegisterHandler(repo)
 	lH := handler.CreateLoginHandler(repo)
+	tH := handler.CreateTimelineHandler(repo)
 
-	s.r.Handle("/register", mw.Auth(http.HandlerFunc(rH.RegisterHandler)))
-	s.r.Handle("/login", mw.Auth(http.HandlerFunc(lH.LoginHandler)))
+	s.r.Handle("/register", http.HandlerFunc(rH.RegisterHandler))
+	s.r.Handle("/sim/register", http.HandlerFunc(rH.RegisterSimHandler))
 
-	s.r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("web/static"))))
+	s.r.Handle("/login", http.HandlerFunc(lH.LoginHandler))
 
+	s.r.Handle("/", mw.Auth(http.HandlerFunc(tH.TimelineHandler)))
+
+	s.r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../web/static"))))
+
+	// TODO + /sim/...
 	// s.Get("/latest", s.LatestHandler)
-	// s.Post("/sim/register", s.RegisterSimHandler)
-
 	// s.Get("/msgs/{username}", s.GetUserMsgsHandler)
 	// s.Post("/msgs/{username}", s.PostUserMsgsHandler)
 	// s.Get("/msgs", s.MsgsHandler)

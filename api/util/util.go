@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/DevOps-Ben11/minitwit/backend/model"
+	"github.com/DevOps-Ben11/minitwit/api/model"
 	"github.com/eefret/gravatar"
 	"github.com/gorilla/sessions"
 	"golang.org/x/crypto/bcrypt"
