@@ -14,7 +14,7 @@ import (
 	"gorm.io/gorm"
 )
 
-const port = ":5001"
+const port = ":5000"
 
 type Server struct {
 	r  *mux.Router
