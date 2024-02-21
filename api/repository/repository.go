@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Repository interface {
+type DB interface {
 	GetUser(username string) (*model.User, bool)
 	GetUserById(user_id *uint) (*model.User, bool)
 	InsertUser(username string, email string, password string) error
@@ -17,7 +17,7 @@ type repository struct {
 	db *gorm.DB
 }
 
-func CreateRepository(db *gorm.DB) Repository {
+func CreateRepository(db *gorm.DB) DB {
 	return &repository{db: db}
 }
 

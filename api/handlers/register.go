@@ -14,7 +14,7 @@ import (
 )
 
 type Register struct {
-	repo repository.Repository
+	db repository.DB
 }
 
 type RegisterSimulator struct {
@@ -23,8 +23,8 @@ type RegisterSimulator struct {
 	PWD      string
 }
 
-func CreateRegisterHandler(repo repository.Repository) *Register {
-	return &Register{repo: repo}
+func CreateRegisterHandler(db repository.DB) *Register {
+	return &Register{db: db}
 }
 
 func (h *Register) RegisterHandler(w http.ResponseWriter, r *http.Request) {
@@ -44,7 +44,7 @@ func (h *Register) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 		}
 		vals := r.PostForm
-		user, _ := h.repo.GetUser(vals.Get("username"))
+		user, _ := h.db.GetUser(vals.Get("username"))
 
 		if !vals.Has("username") || len(vals.Get("username")) == 0 {
 			s := "You have to enter a username"
@@ -62,7 +62,7 @@ func (h *Register) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			s := "The username is already taken"
 			error = &s
 		} else {
-			err := h.repo.InsertUser(vals.Get("username"), vals.Get("email"), vals.Get("password"))
+			err := h.db.InsertUser(vals.Get("username"), vals.Get("email"), vals.Get("password"))
 
 			if err != nil {
 				log.Println("Error creating user:", err)

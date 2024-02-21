@@ -12,11 +12,11 @@ import (
 )
 
 type Timeline struct {
-	repo repository.Repository
+	db repository.DB
 }
 
-func CreateTimelineHandler(repo repository.Repository) *Timeline {
-	return &Timeline{repo: repo}
+func CreateTimelineHandler(db repository.DB) *Timeline {
+	return &Timeline{db: db}
 }
 
 func (h *Timeline) RenderTimeline(w http.ResponseWriter, data model.Template) {
@@ -37,10 +37,10 @@ func (h *Timeline) RenderTimeline(w http.ResponseWriter, data model.Template) {
 
 func (h *Timeline) TimelineHandler(w http.ResponseWriter, r *http.Request) {
 	user_id, _ := util.GetCurrentUser(r)
-	user, _ := h.repo.GetUserById(user_id)
+	user, _ := h.db.GetUserById(user_id)
 	fmt.Println(user)
 	var messages []model.RenderMessage
-	messages, ok := h.repo.GetUserTimeline(user.User_id)
+	messages, ok := h.db.GetUserTimeline(user.User_id)
 	fmt.Println(ok)
 	if !ok {
 		w.WriteHeader(http.StatusInternalServerError)

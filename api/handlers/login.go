@@ -11,11 +11,11 @@ import (
 )
 
 type Login struct {
-	repo repository.Repository
+	db repository.DB
 }
 
-func CreateLoginHandler(repo repository.Repository) *Login {
-	return &Login{repo: repo}
+func CreateLoginHandler(db repository.DB) *Login {
+	return &Login{db: db}
 }
 
 func (h *Login) LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -35,7 +35,7 @@ func (h *Login) LoginHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 		}
 		vals := r.PostForm
-		user, ok := h.repo.GetUser(vals.Get("username"))
+		user, ok := h.db.GetUser(vals.Get("username"))
 
 		if !ok || user == nil {
 			s := "Invalid username"
