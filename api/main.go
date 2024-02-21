@@ -58,10 +58,10 @@ func (s *Server) StartServer() {
 }
 
 func (s *Server) InitRoutes() error {
-	repo := repository.CreateRepository(s.db)
-	rH := handler.CreateRegisterHandler(repo)
-	lH := handler.CreateLoginHandler(repo)
-	tH := handler.CreateTimelineHandler(repo)
+	db := repository.CreateRepository(s.db)
+	rH := handler.CreateRegisterHandler(db)
+	lH := handler.CreateLoginHandler(db)
+	tH := handler.CreateTimelineHandler(db)
 
 	s.r.Handle("/register", http.HandlerFunc(rH.RegisterHandler))
 	s.r.Handle("/sim/register", http.HandlerFunc(rH.RegisterSimHandler))
