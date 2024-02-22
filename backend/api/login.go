@@ -1,29 +1,20 @@
-package handler
+package api
 
 import (
+	"github.com/DevOps-Ben11/minitwit/backend/util"
+	"html/template"
 	"log"
 	"net/http"
-	"text/template"
 
-	"github.com/DevOps-Ben11/minitwit/api/model"
-	"github.com/DevOps-Ben11/minitwit/api/repository"
-	"github.com/DevOps-Ben11/minitwit/api/util"
+	"github.com/DevOps-Ben11/minitwit/backend/model"
 )
 
-type Login struct {
-	db repository.DB
-}
-
-func CreateLoginHandler(db repository.DB) *Login {
-	return &Login{db: db}
-}
-
-func (h *Login) LoginHandler(w http.ResponseWriter, r *http.Request) {
-	user_id, ok := util.GetCurrentUser(r)
+func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
+	user_id, ok := s.GetCurrentUser(r)
 
 	// If the user is authenticated, redirect to the home page
 	if ok || user_id != nil {
-		http.Redirect(w, r, util.UrlFor("timeline", ""), http.StatusFound)
+		http.Redirect(w, r, UrlFor("timeline", ""), http.StatusFound)
 		return
 	}
 
@@ -35,7 +26,7 @@ func (h *Login) LoginHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 		}
 		vals := r.PostForm
-		user, ok := h.db.GetUser(vals.Get("username"))
+		user, ok := s.userRepo.GetUser(vals.Get("username"))
 
 		if !ok || user == nil {
 			s := "Invalid username"
@@ -44,7 +35,7 @@ func (h *Login) LoginHandler(w http.ResponseWriter, r *http.Request) {
 			s := "Invalid password"
 			error = &s
 		} else {
-			session, err := util.GetStore().Get(r, "auth")
+			session, err := s.GetStore().Get(r, "auth")
 
 			if err != nil {
 				log.Println("Error getting session:", err)
@@ -61,12 +52,12 @@ func (h *Login) LoginHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			util.PushFlashMessage(w, r, "You were logged in")
-			http.Redirect(w, r, util.UrlFor("timeline", ""), http.StatusFound)
+			s.PushFlashMessage(w, r, "You were logged in")
+			http.Redirect(w, r, UrlFor("timeline", ""), http.StatusFound)
 		}
 	}
 
-	t, err := template.New("layout.html").Funcs(util.GetFuncMap()).ParseFiles("../web/templates/layout.html", "../web/templates/login.html")
+	t, err := template.New("layout.html").Funcs(s.GetFuncMap()).ParseFiles("../web/templates/layout.html", "../web/templates/login.html")
 
 	if err != nil {
 		log.Println("Error creating template:", err)
@@ -77,7 +68,7 @@ func (h *Login) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	data := model.Template{
 		Request: model.RenderRequest{Endpoint: "login"},
 		Error:   error,
-		Flashes: util.GetFlashedMessages(w, r),
+		Flashes: s.GetFlashedMessages(w, r),
 	}
 
 	if err = t.Execute(w, data); err != nil {

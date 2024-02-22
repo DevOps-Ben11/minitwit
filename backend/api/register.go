@@ -1,21 +1,15 @@
-package handler
+package api
 
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"strings"
-	"text/template"
 
-	"github.com/DevOps-Ben11/minitwit/api/model"
-	"github.com/DevOps-Ben11/minitwit/api/repository"
-	"github.com/DevOps-Ben11/minitwit/api/util"
+	"github.com/DevOps-Ben11/minitwit/backend/model"
 )
-
-type Register struct {
-	db repository.DB
-}
 
 type RegisterSimulator struct {
 	Username string
@@ -23,16 +17,12 @@ type RegisterSimulator struct {
 	PWD      string
 }
 
-func CreateRegisterHandler(db repository.DB) *Register {
-	return &Register{db: db}
-}
-
-func (h *Register) RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	user_id, ok := util.GetCurrentUser(r)
+func (s *Server) RegisterHandler(w http.ResponseWriter, r *http.Request) {
+	user_id, ok := s.GetCurrentUser(r)
 
 	// If the user is authenticated, redirect to the home page
 	if ok || user_id != nil {
-		http.Redirect(w, r, util.UrlFor("timeline", ""), http.StatusFound)
+		http.Redirect(w, r, UrlFor("timeline", ""), http.StatusFound)
 		return
 	}
 
@@ -44,7 +34,7 @@ func (h *Register) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 		}
 		vals := r.PostForm
-		user, _ := h.db.GetUser(vals.Get("username"))
+		user, _ := s.userRepo.GetUser(vals.Get("username"))
 
 		if !vals.Has("username") || len(vals.Get("username")) == 0 {
 			s := "You have to enter a username"
@@ -62,7 +52,7 @@ func (h *Register) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			s := "The username is already taken"
 			error = &s
 		} else {
-			err := h.db.InsertUser(vals.Get("username"), vals.Get("email"), vals.Get("password"))
+			err := s.userRepo.InsertUser(vals.Get("username"), vals.Get("email"), vals.Get("password"))
 
 			if err != nil {
 				log.Println("Error creating user:", err)
@@ -70,8 +60,8 @@ func (h *Register) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			util.PushFlashMessage(w, r, "You were successfully registered and can login now")
-			http.Redirect(w, r, util.UrlFor("/login", ""), http.StatusFound)
+			s.PushFlashMessage(w, r, "You were successfully registered and can login now")
+			http.Redirect(w, r, UrlFor("/login", ""), http.StatusFound)
 			return
 		}
 	}
@@ -79,10 +69,10 @@ func (h *Register) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	data := model.Template{
 		Error:   error,
 		Request: model.RenderRequest{Endpoint: "register"},
-		Flashes: util.GetFlashedMessages(w, r),
+		Flashes: s.GetFlashedMessages(w, r),
 	}
 
-	t, err := template.New("layout.html").Funcs(util.GetFuncMap()).ParseFiles("../web/templates/layout.html", "../web/templates/register.html")
+	t, err := template.New("layout.html").Funcs(s.GetFuncMap()).ParseFiles("../web/templates/layout.html", "../web/templates/register.html")
 
 	if err != nil {
 		log.Println("Error creating template:", err)
@@ -98,7 +88,7 @@ func (h *Register) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 /** <------------- SIMULATOR HANDLER -------------> **/
-func (h *Register) RegisterSimHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) RegisterSimHandler(w http.ResponseWriter, r *http.Request) {
 	// TO DO: Implement latest counter ** update_latest_sim(r) **
 
 	var body RegisterSimulator

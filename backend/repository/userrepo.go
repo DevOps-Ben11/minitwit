@@ -1,29 +1,27 @@
 package repository
 
 import (
-	"github.com/DevOps-Ben11/minitwit/api/model"
-	"github.com/DevOps-Ben11/minitwit/api/util"
+	"github.com/DevOps-Ben11/minitwit/backend/model"
+	"github.com/DevOps-Ben11/minitwit/backend/util"
 	"gorm.io/gorm"
 )
 
-type DB interface {
+type IUserRepository interface {
 	GetUser(username string) (*model.User, bool)
-	GetUserById(user_id *uint) (*model.User, bool)
+	GetUserById(userId uint) (*model.User, bool)
 	InsertUser(username string, email string, password string) error
-	GetUserTimeline(user_id uint) ([]model.RenderMessage, bool)
+	GetUserTimeline(userId uint) ([]model.RenderMessage, error)
 }
 
-type repository struct {
+type UserRepository struct {
 	db *gorm.DB
 }
 
-func CreateRepository(db *gorm.DB) DB {
-	return &repository{db: db}
+func CreateUserRepository(db *gorm.DB) IUserRepository {
+	return UserRepository{db: db}
 }
 
-func (repo *repository) GetUser(username string) (*model.User, bool) {
-	var user *model.User
-
+func (repo UserRepository) GetUser(username string) (user *model.User, ok bool) {
 	err := repo.db.Raw("SELECT * FROM user WHERE username = ?", username).Scan(&user).Error
 
 	if err != nil || user == nil {
@@ -33,9 +31,7 @@ func (repo *repository) GetUser(username string) (*model.User, bool) {
 	return user, true
 }
 
-func (repo *repository) GetUserById(user_id *uint) (*model.User, bool) {
-	var user *model.User
-
+func (repo UserRepository) GetUserById(user_id uint) (user *model.User, ok bool) {
 	err := repo.db.Raw("SELECT * FROM user WHERE user_id = ?", user_id).Scan(&user).Error
 
 	if err != nil || user == nil {
@@ -45,13 +41,13 @@ func (repo *repository) GetUserById(user_id *uint) (*model.User, bool) {
 	return user, true
 }
 
-func (repo *repository) InsertUser(username string, email string, password string) error {
+func (repo UserRepository) InsertUser(username string, email string, password string) error {
 	return repo.db.Exec("INSERT INTO user (username, email, pw_hash) VALUES (?, ?, ?)",
 		username, email, util.GeneratePasswordHash(password),
 	).Error
 }
 
-func (repo *repository) GetUserTimeline(user_id uint) ([]model.RenderMessage, bool) {
+func (repo UserRepository) GetUserTimeline(user_id uint) ([]model.RenderMessage, error) {
 	var messages []model.RenderMessage
 
 	err := repo.db.Raw(
@@ -63,8 +59,8 @@ func (repo *repository) GetUserTimeline(user_id uint) ([]model.RenderMessage, bo
 		`, user_id, user_id, util.PER_PAGE).Scan(&messages).Error
 
 	if err != nil {
-		return nil, false
+		return nil, err
 	}
 
-	return messages, true
+	return messages, nil
 }
