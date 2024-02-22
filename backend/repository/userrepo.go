@@ -11,6 +11,9 @@ type IUserRepository interface {
 	GetUserById(userId uint) (*model.User, bool)
 	InsertUser(username string, email string, password string) error
 	GetUserTimeline(userId uint) ([]model.RenderMessage, error)
+	GetIsFollowing(who uint, whom uint) bool
+	SetFollow(who uint, whom uint) error
+	SetUnfollow(who uint, whom uint) error
 }
 
 type UserRepository struct {
@@ -63,4 +66,18 @@ func (repo UserRepository) GetUserTimeline(user_id uint) ([]model.RenderMessage,
 	}
 
 	return messages, nil
+}
+func (repo UserRepository) GetIsFollowing(who uint, whom uint) bool {
+	followed := false
+	repo.db.Raw("select 1 from follower where follower.who_id = ? and follower.whom_id = ?", who, whom).Scan(&followed)
+	return followed
+}
+
+func (repo UserRepository) SetFollow(who uint, whom uint) error {
+	err := repo.db.Exec("insert into follower (who_id, whom_id) values (?, ?)", who, whom).Error
+	return err
+}
+func (repo UserRepository) SetUnfollow(who uint, whom uint) error {
+	err := repo.db.Exec("delete from follower where who_id=? and whom_id=?", who, whom).Error
+	return err
 }

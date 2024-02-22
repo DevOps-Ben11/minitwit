@@ -11,7 +11,7 @@ type Message struct {
 	Message_id uint `gorm:"primaryKey"`
 	Author_id  uint
 	Text       string
-	Pub_date   int64 `gorm:"autoCreateTime:milli"`
+	Pub_date   int64 `gorm:"autoCreateTime"`
 	Flagged    bool
 }
 

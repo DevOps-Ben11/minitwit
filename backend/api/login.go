@@ -18,7 +18,7 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var error *string = nil
+	var errorStr *string = nil
 
 	if r.Method == "POST" {
 		err := r.ParseForm()
@@ -30,10 +30,10 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		if !ok || user == nil {
 			s := "Invalid username"
-			error = &s
+			errorStr = &s
 		} else if !util.CheckPassword(vals.Get("password"), user.Pw_hash) {
 			s := "Invalid password"
-			error = &s
+			errorStr = &s
 		} else {
 			session, err := s.GetStore().Get(r, "auth")
 
@@ -67,7 +67,7 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	data := model.Template{
 		Request: model.RenderRequest{Endpoint: "login"},
-		Error:   error,
+		Error:   errorStr,
 		Flashes: s.GetFlashedMessages(w, r),
 	}
 
@@ -76,4 +76,24 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+}
+
+func (s *Server) LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	session, err := s.GetStore().Get(r, "auth")
+	if err != nil {
+		log.Println("Error getting session", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	for k := range session.Values {
+		delete(session.Values, k)
+	}
+	err = session.Save(r, w)
+	if err != nil {
+		log.Println("Error loggin out:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	s.PushFlashMessage(w, r, "You were logged out")
+	http.Redirect(w, r, UrlFor("public_timeline", ""), http.StatusFound)
 }

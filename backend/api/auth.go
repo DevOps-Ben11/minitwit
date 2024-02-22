@@ -6,6 +6,7 @@ import (
 	"github.com/DevOps-Ben11/minitwit/backend/model"
 	"log"
 	"net/http"
+	"strings"
 )
 
 type AuthHandlerFunc func(user *model.User, w http.ResponseWriter, r *http.Request)
@@ -23,6 +24,11 @@ func (s *Server) protect(next AuthHandlerFunc) http.HandlerFunc {
 
 func (s *Server) Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, "/static/") {
+			next.ServeHTTP(w, r)
+			return
+		}
+
 		log.Println(fmt.Sprintf("Authenticating request: %s %s\n", r.Method, r.URL))
 
 		_, ok := s.GetCurrentUser(r)

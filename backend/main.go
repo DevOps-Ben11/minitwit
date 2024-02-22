@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/sessions"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 	"log"
 )
 
@@ -15,7 +16,12 @@ const DEBUG = true
 const SECRET_KEY = "development key"
 
 func main() {
-	db, err := gorm.Open(sqlite.Open("../tmp/minitwit.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("../tmp/minitwit.db"), &gorm.Config{
+		NamingStrategy: schema.NamingStrategy{
+			SingularTable: true,
+		},
+	})
+
 	if err != nil {
 		log.Fatalln("Could not open Database", err)
 	}
@@ -23,8 +29,9 @@ func main() {
 	var store = sessions.NewCookieStore([]byte(SECRET_KEY))
 
 	userRepo := repository.CreateUserRepository(db)
+	msgRepo := repository.CreateMessageRepository(db)
 
-	s := api.NewServer(db, store, userRepo)
+	s := api.NewServer(db, store, userRepo, msgRepo)
 
 	err = s.InitRoutes()
 	if err != nil {

@@ -17,15 +17,17 @@ type Server struct {
 	db       *gorm.DB
 	store    *sessions.CookieStore
 	userRepo repository.IUserRepository
+	msgRepo  repository.IMessageRepository
 }
 
-func NewServer(db *gorm.DB, store *sessions.CookieStore, userRepo repository.IUserRepository) Server {
+func NewServer(db *gorm.DB, store *sessions.CookieStore, userRepo repository.IUserRepository, msgRepo repository.IMessageRepository) Server {
 
 	s := Server{
 		r:        mux.NewRouter(),
 		db:       db,
 		store:    store,
 		userRepo: userRepo,
+		msgRepo:  msgRepo,
 	}
 
 	return s
@@ -41,17 +43,24 @@ func (s *Server) GetStore() *sessions.CookieStore {
 }
 
 func (s *Server) InitRoutes() error {
+	s.r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../web/static"))))
+
+	s.r.Use(s.Auth)
+
 	s.r.HandleFunc("/register", s.RegisterHandler)
 	s.r.HandleFunc("/sim/register", s.RegisterSimHandler)
 
 	s.r.HandleFunc("/login", s.LoginHandler)
+	s.r.HandleFunc("/logout", s.LogoutHandler)
 
 	s.r.HandleFunc("/public", s.PublicTimelineHandler)
+	s.r.HandleFunc("/add_message", s.protect(s.AddMessageHandler)).Methods("POST")
 
-	s.r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../web/static"))))
+	s.r.HandleFunc("/{username}/follow", s.protect(s.FollowHandler))
+	s.r.HandleFunc("/{username}/unfollow", s.protect(s.UnfollowHandler))
+	s.r.HandleFunc("/{username}", s.UserHandler)
 
 	s.r.HandleFunc("/", s.protect(s.TimelineHandler))
-	s.r.Use(s.Auth)
 	// TODO + /sim/...
 	// s.Get("/latest", s.LatestHandler)
 	// s.Get("/msgs/{username}", s.GetUserMsgsHandler)

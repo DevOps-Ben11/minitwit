@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/DevOps-Ben11/minitwit/backend/util"
+	"github.com/gorilla/mux"
 	"html/template"
 	"log"
 	"net/http"
@@ -45,11 +45,7 @@ func (s *Server) TimelineHandler(user *model.User, w http.ResponseWriter, r *htt
 }
 
 func (s *Server) PublicTimelineHandler(w http.ResponseWriter, r *http.Request) {
-	var messages []model.RenderMessage
-	err := s.db.Raw(
-		"select message.*, user.* from message, user where message.flagged = 0 and message.author_id = user.user_id order by message.pub_date desc limit ?",
-		util.PER_PAGE).Scan(&messages).Error
-
+	messages, err := s.msgRepo.GetPublicMessages()
 	if err != nil {
 		log.Println("Error getting messages:", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -65,5 +61,41 @@ func (s *Server) PublicTimelineHandler(w http.ResponseWriter, r *http.Request) {
 		Flashes:  s.GetFlashedMessages(w, r),
 	}
 
+	s.RenderTimeline(w, data)
+}
+
+func (s *Server) UserHandler(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	username, ok := vars["username"]
+	if !ok {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	profile, ok := s.userRepo.GetUser(username)
+	if !ok {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	messages, err := s.msgRepo.GetUserMessages(profile)
+	if err != nil {
+		log.Println("Error getting messages:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	followed := false
+	user, ok := s.GetCurrentUser(r)
+	if ok {
+		followed = s.userRepo.GetIsFollowing(user.User_id, profile.User_id)
+	}
+
+	data := model.Template{
+		User:     user,
+		Profile:  profile,
+		Messages: messages,
+		Request:  model.RenderRequest{Endpoint: "user_timeline"},
+		Followed: followed,
+		Flashes:  s.GetFlashedMessages(w, r),
+	}
 	s.RenderTimeline(w, data)
 }
