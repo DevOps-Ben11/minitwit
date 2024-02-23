@@ -6,7 +6,7 @@ on:
     # Run workflow every time something is pushed to the main branch
     branches:
       - main
-      - master
+      - macrowit
   # allow manual triggers for now too
   workflow_dispatch:
     manual: true
