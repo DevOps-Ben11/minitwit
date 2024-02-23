@@ -3,7 +3,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = 'digital_ocean'
   config.vm.box_url = "https://github.com/devopsgroup-io/vagrant-digitalocean/raw/master/box/digital_ocean.box"
   config.ssh.private_key_path = '~/.ssh/id_rsa'
-  config.vm.synced_folder ".", "/vagrant", type: "rsync"
+  config.vm.synced_folder ".", "/minitwit", type: "rsync"
   
   config.vm.define "droplet" do |server|
     # Define the DigitalOcean provider
@@ -20,7 +20,7 @@ Vagrant.configure("2") do |config|
 
     # Configure Docker provisioner
     server.vm.provision "docker" do |docker|
-      docker.build_image "/vagrant",
+      docker.build_image "/minitwit",
         args: "-t minitwit"
         
       docker.run "minitwit",
@@ -28,5 +28,4 @@ Vagrant.configure("2") do |config|
 
     end
   end
-  
 end
