@@ -21,8 +21,12 @@ Vagrant.configure("2") do |config|
     server.vm.provision "shell", inline: 'echo "export DOCKER_USERNAME=' + "'" + ENV["DOCKER_USERNAME"] + "'" + '" >> ~/.bash_profile'
     server.vm.provision "shell", inline: 'echo "export DOCKER_PASSWORD=' + "'" + ENV["DOCKER_PASSWORD"] + "'" + '" >> ~/.bash_profile'
 
+    server.vm.provision "shell", inline: 'chmod +x /minitwit/scripts/deploy.sh'
+
     # Configure Docker provisioner
     server.vm.provision "docker" do |docker|
+      server.vm.provision "shell", inline: 'sudo dnf install docker-compose -y'
+
       docker.build_image "/minitwit",
         args: "-t minitwit-image"
         

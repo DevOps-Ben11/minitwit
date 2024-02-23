@@ -43,8 +43,8 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/minitwit-image:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/minitwit-image:webbuildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/minitwit-image:webbuildcache,mode=max
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/minitwit-image:latest
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/minitwit-image:latests,mode=max
 
       - name: Configure SSH
         run: |
