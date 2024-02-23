@@ -18,13 +18,16 @@ Vagrant.configure("2") do |config|
 
     server.vm.hostname = "minitwit-prod"
 
+    server.vm.provision "shell", inline: 'echo "export DOCKER_USERNAME=' + "'" + ENV["DOCKER_USERNAME"] + "'" + '" >> ~/.bash_profile'
+    server.vm.provision "shell", inline: 'echo "export DOCKER_PASSWORD=' + "'" + ENV["DOCKER_PASSWORD"] + "'" + '" >> ~/.bash_profile'
+
     # Configure Docker provisioner
     server.vm.provision "docker" do |docker|
       docker.build_image "/minitwit",
-        args: "-t minitwit"
+        args: "-t minitwit-image"
         
-      docker.run "minitwit",
-        args: "-d -p 8080:8080"
+      docker.run "minitwit-image",
+        args: "-d -p 5000:5000"
 
     end
   end
