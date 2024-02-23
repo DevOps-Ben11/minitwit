@@ -23,9 +23,12 @@ Vagrant.configure("2") do |config|
 
     server.vm.provision "shell", inline: 'chmod +x /minitwit/scripts/deploy.sh'
 
+    # Install packages
+    server.vm.provision "shell", inline: 'sudo dnf install sqlite -y'
+    server.vm.provision "shell", inline: 'sudo dnf install docker-compose -y'
+
     # Configure Docker provisioner
     server.vm.provision "docker" do |docker|
-      server.vm.provision "shell", inline: 'sudo dnf install docker-compose -y'
 
       docker.build_image "/minitwit",
         args: "-t minitwit-image"
