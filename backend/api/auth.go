@@ -2,11 +2,13 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	"github.com/DevOps-Ben11/minitwit/backend/model"
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/DevOps-Ben11/minitwit/backend/model"
 )
 
 type AuthHandlerFunc func(user *model.User, w http.ResponseWriter, r *http.Request)
@@ -69,3 +71,23 @@ func (s *Server) Auth(next http.Handler) http.Handler {
 type AuthCtxKey string
 
 var UserKey = AuthCtxKey("user")
+
+func (s *Server) simProtect(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fromSim := r.Header.Get("Authorization")
+		if fromSim != "Basic c2ltdWxhdG9yOnN1cGVyX3NhZmUh" {
+			e := ErrReturn{Status: http.StatusForbidden, ErrorMsg: "You are not authorized to use this resource!"}
+			t, err := json.Marshal(e)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusForbidden)
+			w.Write(t)
+			return
+		}
+		next(w, r)
+	}
+}

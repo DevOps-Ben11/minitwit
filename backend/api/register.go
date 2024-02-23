@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -12,9 +11,9 @@ import (
 )
 
 type RegisterSimulator struct {
-	Username string
-	Email    string
-	PWD      string
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	PWD      string `json:"pwd"`
 }
 
 func (s *Server) RegisterHandler(w http.ResponseWriter, r *http.Request) {
@@ -89,8 +88,6 @@ func (s *Server) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 /** <------------- SIMULATOR HANDLER -------------> **/
 func (s *Server) RegisterSimHandler(w http.ResponseWriter, r *http.Request) {
-	// TO DO: Implement latest counter ** update_latest_sim(r) **
-
 	var body RegisterSimulator
 	json.NewDecoder(r.Body).Decode(&body)
 
@@ -98,36 +95,39 @@ func (s *Server) RegisterSimHandler(w http.ResponseWriter, r *http.Request) {
 	email := body.Email
 	pwd := body.PWD
 
-	var error *string = nil
+	var errorStr *string = nil
 
 	if username == "" {
 		s := "You have to enter a username"
-		error = &s
+		errorStr = &s
 	} else if email == "" || !strings.Contains(email, "@") {
 		s := "You have to enter a valid email address"
-		error = &s
+		errorStr = &s
 	} else if pwd == "" {
 		s := "You have to enter a password"
-		error = &s
+		errorStr = &s
+	} else if _, ok := s.userRepo.GetUser(username); ok {
+		s := "The username is already taken"
+		errorStr = &s
+	} else {
+		err := s.userRepo.InsertUser(username, email, pwd)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 	}
 
-	fmt.Println(username, email, pwd)
-	fmt.Println(*error)
+	if errorStr != nil {
+		t := ErrReturn{Status: http.StatusBadRequest, ErrorMsg: *errorStr}
+		m, err := json.Marshal(t)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-	// else if user != nil {
-	// 	s := "The username is already taken"
-	// 	error = &s
-	// } else {
-	// 	err := h.repo.InsertUser(vals.Get("username"), vals.Get("email"), vals.Get("password"))
-
-	// 	if err != nil {
-	// 		log.Println("Error creating user:", err)
-	// 		w.WriteHeader(http.StatusInternalServerError)
-	// 		return
-	// 	}
-
-	// 	util.PushFlashMessage(w, r, "You were successfully registered and can login now")
-	// 	http.Redirect(w, r, util.UrlFor("/login", ""), http.StatusFound)
-	// 	return
-	// }
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(m)
+	} else {
+		w.WriteHeader(http.StatusNoContent)
+	}
 }

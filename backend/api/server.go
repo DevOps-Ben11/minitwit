@@ -45,10 +45,19 @@ func (s *Server) GetStore() *sessions.CookieStore {
 func (s *Server) InitRoutes() error {
 	s.r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../web/static"))))
 
+	simR := s.r.PathPrefix("/sim").Subrouter()
+	simR.Use(s.LatestMiddleware)
+	simR.HandleFunc("/register", s.RegisterSimHandler).Methods("POST")
+	simR.HandleFunc("/latest", s.LatestHandler).Methods("GET")
+	simR.HandleFunc("/msgs/{username}", s.simProtect(s.MessageGetSimUserHandler)).Methods("GET")
+	simR.HandleFunc("/msgs/{username}", s.simProtect(s.MessagePostSimUserHandler)).Methods("POST")
+	simR.HandleFunc("/msgs", s.simProtect(s.MessagesSimHandler)).Methods("GET")
+	simR.HandleFunc("/fllws/{username}", s.simProtect(s.FollowGetSimHandler)).Methods("GET")
+	simR.HandleFunc("/fllws/{username}", s.simProtect(s.FollowPostSimHandler)).Methods("POST")
+
 	s.r.Use(s.Auth)
 
 	s.r.HandleFunc("/register", s.RegisterHandler)
-	s.r.HandleFunc("/sim/register", s.RegisterSimHandler)
 
 	s.r.HandleFunc("/login", s.LoginHandler)
 	s.r.HandleFunc("/logout", s.LogoutHandler)
@@ -61,13 +70,6 @@ func (s *Server) InitRoutes() error {
 	s.r.HandleFunc("/{username}", s.UserHandler)
 
 	s.r.HandleFunc("/", s.protect(s.TimelineHandler))
-	// TODO + /sim/...
-	// s.Get("/latest", s.LatestHandler)
-	// s.Get("/msgs/{username}", s.GetUserMsgsHandler)
-	// s.Post("/msgs/{username}", s.PostUserMsgsHandler)
-	// s.Get("/msgs", s.MsgsHandler)
-	// s.Get("/fllws/{username}", s.GetUserFollowsHandler)
-	// s.Post("/fllws/{username}", s.PostUserFollowsHandler)
 
 	return nil
 }
@@ -77,6 +79,7 @@ func (s *Server) InitDB() error {
 		&model.User{},
 		&model.Follower{},
 		&model.Message{},
+		&model.KeyVal{},
 	)
 	return err
 }
@@ -111,6 +114,7 @@ func (s *Server) GetFlashedMessages(w http.ResponseWriter, r *http.Request) []mo
 
 	return messages
 }
+
 func (s *Server) GetCurrentUser(r *http.Request) (user *model.User, ok bool) {
 	ctx := r.Context()
 	user, ok = ctx.Value(UserKey).(*model.User)
@@ -124,4 +128,15 @@ func (s *Server) GetFuncMap() template.FuncMap {
 		"Gravatar":           util.Gravatar,
 		"Datetimeformat":     util.Datetimeformat,
 	}
+}
+
+func (s *Server) GetKeyVal(key string) (model.KeyVal, error) {
+	ret := model.KeyVal{Key: key}
+	err := s.db.First(&ret).Error
+	return ret, err
+}
+
+func (s *Server) SetKeyVal(key string, value string) error {
+	err := s.db.Save(&model.KeyVal{Key: key, Value: value}).Error
+	return err
 }

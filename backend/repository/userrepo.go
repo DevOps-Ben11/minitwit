@@ -14,6 +14,7 @@ type IUserRepository interface {
 	GetIsFollowing(who uint, whom uint) bool
 	SetFollow(who uint, whom uint) error
 	SetUnfollow(who uint, whom uint) error
+	GetUsersFollowing(userId uint, limit int) ([]string, error)
 }
 
 type UserRepository struct {
@@ -80,4 +81,15 @@ func (repo UserRepository) SetFollow(who uint, whom uint) error {
 func (repo UserRepository) SetUnfollow(who uint, whom uint) error {
 	err := repo.db.Exec("delete from follower where who_id=? and whom_id=?", who, whom).Error
 	return err
+}
+
+func (repo UserRepository) GetUsersFollowing(userId uint, limit int) ([]string, error) {
+	var usernames []string
+	err := repo.db.Raw(`
+        SELECT user.username FROM user
+                   INNER JOIN follower ON follower.whom_id=user.user_id
+                   WHERE follower.who_id=?
+                   LIMIT ?
+        `, userId, limit).Scan(&usernames).Error
+	return usernames, err
 }

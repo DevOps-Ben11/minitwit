@@ -1,12 +1,14 @@
 package api
 
 import (
-	"github.com/gorilla/mux"
 	"html/template"
 	"log"
 	"net/http"
 
+	"github.com/gorilla/mux"
+
 	"github.com/DevOps-Ben11/minitwit/backend/model"
+	"github.com/DevOps-Ben11/minitwit/backend/util"
 )
 
 func (s *Server) RenderTimeline(w http.ResponseWriter, data model.Template) {
@@ -45,7 +47,7 @@ func (s *Server) TimelineHandler(user *model.User, w http.ResponseWriter, r *htt
 }
 
 func (s *Server) PublicTimelineHandler(w http.ResponseWriter, r *http.Request) {
-	messages, err := s.msgRepo.GetPublicMessages()
+	messages, err := s.msgRepo.GetPublicMessages(util.PER_PAGE)
 	if err != nil {
 		log.Println("Error getting messages:", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -77,7 +79,7 @@ func (s *Server) UserHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	messages, err := s.msgRepo.GetUserMessages(profile)
+	messages, err := s.msgRepo.GetUserMessages(profile.User_id, util.PER_PAGE)
 	if err != nil {
 		log.Println("Error getting messages:", err)
 		w.WriteHeader(http.StatusInternalServerError)
