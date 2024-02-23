@@ -5,7 +5,7 @@ Vagrant.configure("2") do |config|
   config.ssh.private_key_path = '~/.ssh/id_rsa'
   config.vm.synced_folder ".", "/minitwit", type: "rsync"
   
-  config.vm.define "droplet" do |server|
+  config.vm.define "minitwit-prod" do |server|
     # Define the DigitalOcean provider
     server.vm.provider :digital_ocean do |provider, override|
       provider.ssh_key_name = ENV["SSH_KEY_NAME"]
@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
       provider.size = "s-1vcpu-1gb"                    # Choose your preferred droplet size
     end
 
-    server.vm.hostname = "minitwit"
+    server.vm.hostname = "minitwit-prod"
 
     # Configure Docker provisioner
     server.vm.provision "docker" do |docker|
