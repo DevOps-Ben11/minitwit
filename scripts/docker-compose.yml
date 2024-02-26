@@ -9,8 +9,9 @@ services:
     container_name: minitwit-image
 
     # Syncing host db to one on the container
+    # for the :z - https://stackoverflow.com/a/54787364
     volumes:
-      - ../tmp:/app/tmp
+      - ../tmp:/app/tmp:z
 
     # Exposing port from container to host
     ports:
