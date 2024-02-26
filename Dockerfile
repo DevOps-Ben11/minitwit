@@ -5,13 +5,15 @@ FROM golang:latest
 WORKDIR /app
 
 # Copy go mod and sum files
-COPY go.mod go.sum ./
+COPY go.mod ./
+COPY go.sum ./
 
 # Download all dependencies
 RUN go mod download
 
 # Copy the source code from the current directory to the Working Directory inside the container
-COPY . .
+COPY ./backend ./backend
+COPY ./web ./web
 
 WORKDIR /app/backend
 

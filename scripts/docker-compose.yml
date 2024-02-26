@@ -4,10 +4,14 @@ networks:
   main:
 
 services:
-  minitwitimage:
+  minitwit-image:
     image: ${DOCKER_USERNAME}/minitwit-image:latest
-    container_name: minitwit
-    networks:
-      - main
+    container_name: minitwit-image
+
+    # Syncing host db to one on the container
+    volumes:
+      - ../tmp:/app/tmp
+
+    # Exposing port from container to host
     ports:
         - '5000:5000'

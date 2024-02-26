@@ -7,17 +7,10 @@ on:
     branches:
       - main
       - macrowit
+
   # allow manual triggers for now too
   workflow_dispatch:
     manual: true
-
-# Remember to set the following secrets in your repository's settings:
-# https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions
-# DOCKER_USERNAME
-# DOCKER_PASSWORD
-# SSH_USER
-# SSH_KEY
-# SSH_HOST
 
 jobs:
   build:
