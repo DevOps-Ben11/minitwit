@@ -12,13 +12,14 @@ In your prefered terminal do:
 
 1. `git clone git@github.com:DevOps-Ben11/minitwit.git`
 2. `cd minitwit`
-3. `docker build -t minitwit .`
-4. `docker run -p 8080:8080 minitwit`
-5. Open [http://localhost:8080/](http://localhost:8080/) to see the application
+3. `docker build -t minitwit-image .`
+4. `docker run -v ./tmp:/app/tmp -p 5000:5000 minitwit-image`
+5. Open [http://localhost:5000/](http://localhost:5000/) to see the application
 
 ## Deploying
-The WEB application can be found here [http://64.226.68.241:8080/public](http://64.226.68.241:8080/public).
+Deployments happen through CI/CD using GitHub Actions when merging to `main`.
 
-1. Create `.env` file based on `.env.example`.
-2. Running `vagrant up` will create a new droplet on DigitalOcean which will install docker and build the GO application
-3. To redeploy, run `vagrant provision` which will re-sync the local folder with VPS and rerun docker commands.
+The WEB application can be found here [http://138.68.126.8:5000](http://138.68.126.8:5000).
+
+## API docs
+Our API is documented through Postman and can be found [here](https://documenter.getpostman.com/view/1487273/2sA2rCU2He#intro). API for the **simulations** can be found there as well.

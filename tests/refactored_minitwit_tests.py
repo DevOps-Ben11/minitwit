@@ -15,7 +15,7 @@ import requests
 # import schema
 # import data
 # otherwise use the database that you got previously
-BASE_URL = "http://localhost:8080"
+BASE_URL = "http://localhost:5000"
 
 def register(username, password, password2=None, email=None):
     """Helper function to register a user"""
@@ -138,6 +138,6 @@ def test_timelines():
     assert 'the message by bar' in r.text
 
 # test_register()
-# test_login_logout()
-# test_message_recording()
-# test_timelines()
+test_login_logout()
+test_message_recording()
+test_timelines()
