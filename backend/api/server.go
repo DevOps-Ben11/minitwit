@@ -1,15 +1,16 @@
 package api
 
 import (
+	"html/template"
+	"log"
+	"net/http"
+
 	"github.com/DevOps-Ben11/minitwit/backend/model"
 	"github.com/DevOps-Ben11/minitwit/backend/repository"
 	"github.com/DevOps-Ben11/minitwit/backend/util"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"gorm.io/gorm"
-	"html/template"
-	"log"
-	"net/http"
 )
 
 type Server struct {
@@ -43,7 +44,7 @@ func (s *Server) GetStore() *sessions.CookieStore {
 }
 
 func (s *Server) InitRoutes() error {
-	s.r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../web/static"))))
+	// s.r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../web/static"))))
 
 	simR := s.r.PathPrefix("/sim").Subrouter()
 	simR.Use(s.LatestMiddleware)
@@ -55,21 +56,31 @@ func (s *Server) InitRoutes() error {
 	simR.HandleFunc("/fllws/{username}", s.simProtect(s.FollowGetSimHandler)).Methods("GET")
 	simR.HandleFunc("/fllws/{username}", s.simProtect(s.FollowPostSimHandler)).Methods("POST")
 
-	s.r.Use(s.Auth)
+	// s.r.Use(s.Auth)
 
-	s.r.HandleFunc("/register", s.RegisterHandler)
+	// s.r.HandleFunc("/register", s.RegisterHandler)
 
-	s.r.HandleFunc("/login", s.LoginHandler)
-	s.r.HandleFunc("/logout", s.LogoutHandler)
+	// s.r.HandleFunc("/login", s.LoginHandler)
+	// s.r.HandleFunc("/logout", s.LogoutHandler)
 
-	s.r.HandleFunc("/public", s.PublicTimelineHandler)
-	s.r.HandleFunc("/add_message", s.protect(s.AddMessageHandler)).Methods("POST")
+	// s.r.HandleFunc("/public", s.PublicTimelineHandler)
+	// s.r.HandleFunc("/add_message", s.protect(s.AddMessageHandler)).Methods("POST")
 
-	s.r.HandleFunc("/{username}/follow", s.protect(s.FollowHandler))
-	s.r.HandleFunc("/{username}/unfollow", s.protect(s.UnfollowHandler))
-	s.r.HandleFunc("/{username}", s.UserHandler)
+	// s.r.HandleFunc("/{username}/follow", s.protect(s.FollowHandler))
+	// s.r.HandleFunc("/{username}/unfollow", s.protect(s.UnfollowHandler))
+	// s.r.HandleFunc("/{username}", s.UserHandler)
 
-	s.r.HandleFunc("/", s.protect(s.TimelineHandler))
+	// s.r.HandleFunc("/", s.protect(s.TimelineHandler))
+
+	// client := http.FileServer(http.Dir("../client/dist/"))
+	// s.r.PathPrefix("/").Handler(client)
+
+	// Serve static files
+	s.r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("../client/dist/assets/"))))
+
+	s.r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "../client/dist/index.html")
+	})
 
 	return nil
 }
