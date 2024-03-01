@@ -88,7 +88,6 @@ func (s *Server) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 /** <------------- SIMULATOR HANDLER -------------> **/
 func (s *Server) RegisterSimHandler(w http.ResponseWriter, r *http.Request) {
-	// start := time.Now()
 	var body RegisterSimulator
 	json.NewDecoder(r.Body).Decode(&body)
 
@@ -111,14 +110,12 @@ func (s *Server) RegisterSimHandler(w http.ResponseWriter, r *http.Request) {
 		s := "The username is already taken"
 		errorStr = &s
 	} else {
-		// t := time.Now()
+
 		err := s.userRepo.InsertUser(username, email, pwd)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 	}
-	// elapsed := time.Since(start)
-	// log.Printf("RegisterSimHandler took %s", elapsed)
 
 	if errorStr != nil {
 		t := ErrReturn{Status: http.StatusBadRequest, ErrorMsg: *errorStr}
