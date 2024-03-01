@@ -48,7 +48,7 @@ func (repo UserRepository) GetUserById(user_id uint) (user *model.User, ok bool)
 func (repo UserRepository) InsertUser(username string, email string, password string) error {
 	return repo.db.Exec("INSERT INTO user (username, email, pw_hash) VALUES (?, ?, ?)",
 		username, email, util.GeneratePasswordHash(password),
-	).Error
+	).Error //util.GeneratePasswordHash(
 }
 
 func (repo UserRepository) GetUserTimeline(user_id uint) ([]model.RenderMessage, error) {

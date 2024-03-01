@@ -2,17 +2,18 @@ package util
 
 import (
 	"fmt"
-	"github.com/eefret/gravatar"
-	"golang.org/x/crypto/bcrypt"
 	"log"
 	"strings"
 	"time"
+
+	"github.com/eefret/gravatar"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const PER_PAGE = 30
 
 func GeneratePasswordHash(password string) string {
-	bytes, _ := bcrypt.GenerateFromPassword([]byte(password), 14)
+	bytes, _ := bcrypt.GenerateFromPassword([]byte(password), 3)
 	return string(bytes)
 }
 
