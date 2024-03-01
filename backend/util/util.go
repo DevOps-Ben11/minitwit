@@ -13,7 +13,7 @@ import (
 const PER_PAGE = 30
 
 func GeneratePasswordHash(password string) string {
-	bytes, _ := bcrypt.GenerateFromPassword([]byte(password), 3)
+	bytes, _ := bcrypt.GenerateFromPassword([]byte(password), 1)
 	return string(bytes)
 }
 
