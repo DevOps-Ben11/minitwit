@@ -4,7 +4,7 @@ name: Create Release
 on:
   push:
     branches:
-      - feature/automatic-release
+      - main
 
 jobs:
   # https://stackoverflow.com/a/74955554/10836486
