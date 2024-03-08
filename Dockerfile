@@ -18,10 +18,11 @@ COPY ./web ./web
 WORKDIR /app/backend
 
 # Build the Go app
-RUN go build -o main .
+RUN go build -tags prod -o main .
 
 # Expose port 5000 to the outside world
 EXPOSE 5000
+EXPOSE 80
 
 # Command to run the executable
 CMD ["./main"]

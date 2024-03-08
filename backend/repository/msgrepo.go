@@ -21,14 +21,14 @@ func CreateMessageRepository(db *gorm.DB) IMessageRepository {
 
 func (m MessageRepository) GetPublicMessages(limit int) ([]model.RenderMessage, error) {
 	var messages []model.RenderMessage
-	err := m.db.Model(&model.Message{}).Select("message.*, user.*").Joins("LEFT JOIN user ON user.user_id = message.author_id").Where("message.flagged = 0").Order("message.pub_date DESC").Limit(limit).Scan(&messages).Error
+	err := m.db.Model(&model.Message{}).Select("*").Joins("LEFT JOIN users ON users.user_id = messages.author_id").Where("messages.flagged = ?", false).Order("messages.pub_date DESC").Limit(limit).Scan(&messages).Error
 
 	return messages, err
 }
 
 func (m MessageRepository) GetUserMessages(userId uint, limit int) ([]model.RenderMessage, error) {
 	var messages []model.RenderMessage
-	err := m.db.Model(&model.Message{}).Select("message.*, user.*").Joins("LEFT JOIN user ON user.user_id = message.author_id").Where("user.user_id = ?", userId).Order("message.pub_date DESC").Limit(limit).Scan(&messages).Error
+	err := m.db.Model(&model.Message{}).Select("messages.*, users.*").Joins("LEFT JOIN users ON users.user_id = messages.author_id").Where("users.user_id = ?", userId).Order("messages.pub_date DESC").Limit(limit).Scan(&messages).Error
 	return messages, err
 }
 

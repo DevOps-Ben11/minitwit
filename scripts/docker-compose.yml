@@ -18,3 +18,4 @@ services:
     # Exposing port from container to host
     ports:
         - '5000:5000'
+        - '80:5000'

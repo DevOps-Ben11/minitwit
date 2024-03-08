@@ -51,17 +51,8 @@ func (repo UserRepository) InsertUser(username string, email string, password st
 func (repo UserRepository) GetUserTimeline(user_id uint) ([]model.RenderMessage, error) {
 	var messages []model.RenderMessage
 
-	// We chose to not use the GORM query, since its less readable than the raw SQlite Query.
-	// err := repo.db.Where("message.flagged=0 AND message.author_id = user.user_id AND (user.user_id = ? OR user.user_id IN (?)", user_id,
-	// repo.db.Table("follower").Where("who_id = ?", user_id).Select("whom_id")).Order("message.pub_date DESC").Limit(util.PER_PAGE).Select("message.*", "user.*").Find(&messages).Error
-
-	err := repo.db.Raw(
-		`SELECT message.*, users.* FROM message, users
-			WHERE message.flagged = 0 AND message.author_id = users.user_id
-				AND (users.user_id = ? OR users.user_id IN
-					(SELECT whom_id FROM follower WHERE who_id = ?))
-			ORDER BY message.pub_date DESC LIMIT ?
-		`, user_id, user_id, util.PER_PAGE).Scan(&messages).Error
+	err := repo.db.Model(&model.Message{}).Model(&model.Message{}).Joins("LEFT JOIN users ON users.user_id = messages.author_id").Where("messages.flagged = ? AND (users.user_id = ? OR users.user_id IN (?))", false, user_id,
+		repo.db.Model(&model.Follower{}).Where("who_id = ?", user_id).Select("whom_id")).Order("messages.pub_date DESC").Limit(util.PER_PAGE).Select("messages.*", "users.*").Find(&messages).Error
 
 	if err != nil {
 		return nil, err
@@ -89,6 +80,6 @@ func (repo UserRepository) SetUnfollow(who uint, whom uint) error {
 func (repo UserRepository) GetUsersFollowing(userId uint, limit int) ([]string, error) {
 	var usernames []string
 
-	err := repo.db.Model(&model.User{}).Select("user.username").Joins("INNER JOIN follower ON follower.whom_id=user.user_id").Where("follower.who_id=?", userId).Limit(limit).Scan(&usernames).Error
+	err := repo.db.Model(&model.User{}).Select("users.username").Joins("INNER JOIN followers ON followers.whom_id=users.user_id").Where("followers.who_id=?", userId).Limit(limit).Scan(&usernames).Error
 	return usernames, err
 }
