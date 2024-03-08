@@ -1,0 +1,39 @@
+---
+name: Create Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # https://stackoverflow.com/a/74955554/10836486
+  create-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          # required for github-action-get-previous-tag
+          fetch-depth: 0
+
+      - name: Get previous tag
+        id: tag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get next tag version
+        id: semver
+        uses: "WyriHaximus/github-action-next-semvers@v1"
+        with:
+          version: ${{ steps.tag.outputs.tag }}
+
+      - name: Create release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.semver.outputs.patch }}
+          release_name: Release v${{ steps.semver.outputs.patch }}
