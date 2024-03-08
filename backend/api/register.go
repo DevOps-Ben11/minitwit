@@ -110,6 +110,7 @@ func (s *Server) RegisterSimHandler(w http.ResponseWriter, r *http.Request) {
 		s := "The username is already taken"
 		errorStr = &s
 	} else {
+
 		err := s.userRepo.InsertUser(username, email, pwd)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)

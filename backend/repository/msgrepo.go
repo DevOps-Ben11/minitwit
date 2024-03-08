@@ -21,16 +21,14 @@ func CreateMessageRepository(db *gorm.DB) IMessageRepository {
 
 func (m MessageRepository) GetPublicMessages(limit int) ([]model.RenderMessage, error) {
 	var messages []model.RenderMessage
-	err := m.db.Raw(
-		"select message.*, users.* from message, users where message.flagged = ? and message.author_id = users.user_id order by message.pub_date desc limit ?",
-		false, limit).Scan(&messages).Error
+	err := m.db.Model(&model.Message{}).Select("message.*, user.*").Joins("LEFT JOIN user ON user.user_id = message.author_id").Where("message.flagged = 0").Order("message.pub_date DESC").Limit(limit).Scan(&messages).Error
 
 	return messages, err
 }
 
 func (m MessageRepository) GetUserMessages(userId uint, limit int) ([]model.RenderMessage, error) {
 	var messages []model.RenderMessage
-	err := m.db.Raw("select message.*, users.* from message, users where user.user_id = message.author_id and users.user_id = ? order by message.pub_date desc limit ?", userId, limit).Scan(&messages).Error
+	err := m.db.Model(&model.Message{}).Select("message.*, user.*").Joins("LEFT JOIN user ON user.user_id = message.author_id").Where("user.user_id = ?", userId).Order("message.pub_date DESC").Limit(limit).Scan(&messages).Error
 	return messages, err
 }
 
