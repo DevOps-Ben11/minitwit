@@ -1,15 +1,17 @@
 package api
 
 import (
+	"html/template"
+	"log"
+	"net/http"
+
 	"github.com/DevOps-Ben11/minitwit/backend/model"
 	"github.com/DevOps-Ben11/minitwit/backend/repository"
 	"github.com/DevOps-Ben11/minitwit/backend/util"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gorm.io/gorm"
-	"html/template"
-	"log"
-	"net/http"
 )
 
 type Server struct {
@@ -64,6 +66,8 @@ func (s *Server) InitRoutes() error {
 
 	s.r.HandleFunc("/public", s.PublicTimelineHandler)
 	s.r.HandleFunc("/add_message", s.protect(s.AddMessageHandler)).Methods("POST")
+
+	s.r.Handle("/metrics", promhttp.Handler())
 
 	s.r.HandleFunc("/{username}/follow", s.protect(s.FollowHandler))
 	s.r.HandleFunc("/{username}/unfollow", s.protect(s.UnfollowHandler))
