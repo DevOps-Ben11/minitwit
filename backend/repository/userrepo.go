@@ -45,8 +45,7 @@ func CreateUserRepository(db *gorm.DB) IUserRepository {
 }
 
 func (repo UserRepository) GetUser(username string) (user *model.User, ok bool) {
-	err := repo.db.Raw("SELECT * FROM user WHERE username = ?", username).Scan(&user).Error
-
+	err := repo.db.Where("username = ?", username).First(&user).Error
 	if err != nil || user == nil {
 		return nil, false
 	}
@@ -55,7 +54,7 @@ func (repo UserRepository) GetUser(username string) (user *model.User, ok bool) 
 }
 
 func (repo UserRepository) GetUserById(user_id uint) (user *model.User, ok bool) {
-	err := repo.db.Raw("SELECT * FROM user WHERE user_id = ?", user_id).Scan(&user).Error
+	err := repo.db.Where("user_id = ?", user_id).First(&user).Error
 
 	if err != nil || user == nil {
 		return nil, false
@@ -65,9 +64,8 @@ func (repo UserRepository) GetUserById(user_id uint) (user *model.User, ok bool)
 }
 
 func (repo UserRepository) InsertUser(username string, email string, password string) error {
-	err := repo.db.Exec("INSERT INTO user (username, email, pw_hash) VALUES (?, ?, ?)",
-		username, email, util.GeneratePasswordHash(password),).Error
-	if err == nil {
+  err := repo.db.Create(&model.User{Username: username, Email: email, Pw_hash: util.GeneratePasswordHash(password)}).Error
+  if err == nil {
 		usersRegistered.Inc()
 	}
 	return err
@@ -75,6 +73,10 @@ func (repo UserRepository) InsertUser(username string, email string, password st
 
 func (repo UserRepository) GetUserTimeline(user_id uint) ([]model.RenderMessage, error) {
 	var messages []model.RenderMessage
+
+	// We chose to not use the GORM query, since its less readable than the raw SQlite Query.
+	// err := repo.db.Where("message.flagged=0 AND message.author_id = user.user_id AND (user.user_id = ? OR user.user_id IN (?)", user_id,
+	// repo.db.Table("follower").Where("who_id = ?", user_id).Select("whom_id")).Order("message.pub_date DESC").Limit(util.PER_PAGE).Select("message.*", "user.*").Find(&messages).Error
 
 	err := repo.db.Raw(
 		`SELECT message.*, user.* FROM message, user
@@ -91,33 +93,29 @@ func (repo UserRepository) GetUserTimeline(user_id uint) ([]model.RenderMessage,
 	return messages, nil
 }
 func (repo UserRepository) GetIsFollowing(who uint, whom uint) bool {
-	followed := false
-	repo.db.Raw("select 1 from follower where follower.who_id = ? and follower.whom_id = ?", who, whom).Scan(&followed)
-	return followed
+	var f model.Follower
+	// If first cannot find a value, this query will throw an error.
+	err := repo.db.Where("who_id = ? and whom_id = ?", who, whom).First(&f).Error
+	// The error is used to see if there is a following between who and whom. if there is no error returns true, otherwise returns false
+	return err == nil
 }
 
 func (repo UserRepository) SetFollow(who uint, whom uint) error {
-	err := repo.db.Exec("insert into follower (who_id, whom_id) values (?, ?)", who, whom).Error
-	if err == nil {
-		usersFollowed.Inc()
-	}
-	return err
-}
-func (repo UserRepository) SetUnfollow(who uint, whom uint) error {
-	err := repo.db.Exec("delete from follower where who_id=? and whom_id=?", who, whom).Error
-	if err == nil {
+	err := repo.db.Create(&model.Follower{Who_id: who, Whom_id: whom}).Error
+  if err == nil {
 		usersUnfollowed.Inc()
 	}
 	return err
 }
 
+func (repo UserRepository) SetUnfollow(who uint, whom uint) error {
+	err := repo.db.Delete(&model.Follower{}, "who_id=? and whom_id=?", who, whom).Error
+	return err
+}
+
 func (repo UserRepository) GetUsersFollowing(userId uint, limit int) ([]string, error) {
 	var usernames []string
-	err := repo.db.Raw(`
-        SELECT user.username FROM user
-                   INNER JOIN follower ON follower.whom_id=user.user_id
-                   WHERE follower.who_id=?
-                   LIMIT ?
-        `, userId, limit).Scan(&usernames).Error
+
+	err := repo.db.Model(&model.User{}).Select("user.username").Joins("INNER JOIN follower ON follower.whom_id=user.user_id").Where("follower.who_id=?", userId).Limit(limit).Scan(&usernames).Error
 	return usernames, err
 }
