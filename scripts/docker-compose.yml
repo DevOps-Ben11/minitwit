@@ -21,9 +21,9 @@ services:
     image: prom/prometheus
     container_name: prometheus
     volumes:
-      - ../prometheus.yml:/etc/prometheus/prometheus.yml
-      - ../prom_data:/prometheus
-
+      - ../prometheus.yml:/etc/prometheus/prometheus.yml:z
+      - ../prom_data:/prometheus:z
+    user: '0:0'
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
 
