@@ -6,6 +6,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.synced_folder "./tmp", "/minitwit/tmp", type: "rsync"
   config.vm.synced_folder "./scripts", "/minitwit/scripts", type: "rsync"
+  # add config for prometheus
 
   # By default, vagrant will sync the current directory to /vagrant. We do not want that
   config.vm.synced_folder ".", "/vagrant", disabled: true

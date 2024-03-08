@@ -5,3 +5,4 @@ __pycache__
 .vagrant
 .idea/
 ./backend/main
+prom_data/
