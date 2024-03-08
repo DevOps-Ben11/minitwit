@@ -3,12 +3,12 @@ name: Create Release
 
 on:
   push:
-    # Run workflow every time something is pushed to the main branch
     branches:
       - feature/automatic-release
 
 jobs:
-  generate-release:
+  # https://stackoverflow.com/a/74955554/10836486
+  create-release:
     runs-on: ubuntu-latest
 
     steps:
@@ -36,4 +36,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ steps.semver.outputs.patch }}
-          release_name: Release ${{ steps.semver.outputs.patch }}
+          release_name: Release v${{ steps.semver.outputs.patch }}
