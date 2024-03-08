@@ -26,7 +26,7 @@ func CreateUserRepository(db *gorm.DB) IUserRepository {
 }
 
 func (repo UserRepository) GetUser(username string) (user *model.User, ok bool) {
-	err := repo.db.Raw("SELECT * FROM user WHERE username = ?", username).Scan(&user).Error
+	err := repo.db.Raw("SELECT * FROM users WHERE username = ?", username).Scan(&user).Error
 
 	if err != nil || user == nil {
 		return nil, false
@@ -36,7 +36,7 @@ func (repo UserRepository) GetUser(username string) (user *model.User, ok bool) 
 }
 
 func (repo UserRepository) GetUserById(user_id uint) (user *model.User, ok bool) {
-	err := repo.db.Raw("SELECT * FROM user WHERE user_id = ?", user_id).Scan(&user).Error
+	err := repo.db.Raw("SELECT * FROM users WHERE user_id = ?", user_id).Scan(&user).Error
 
 	if err != nil || user == nil {
 		return nil, false
@@ -46,7 +46,7 @@ func (repo UserRepository) GetUserById(user_id uint) (user *model.User, ok bool)
 }
 
 func (repo UserRepository) InsertUser(username string, email string, password string) error {
-	return repo.db.Exec("INSERT INTO user (username, email, pw_hash) VALUES (?, ?, ?)",
+	return repo.db.Exec("INSERT INTO users (username, email, pw_hash) VALUES (?, ?, ?)",
 		username, email, util.GeneratePasswordHash(password),
 	).Error
 }
@@ -55,9 +55,9 @@ func (repo UserRepository) GetUserTimeline(user_id uint) ([]model.RenderMessage,
 	var messages []model.RenderMessage
 
 	err := repo.db.Raw(
-		`SELECT message.*, user.* FROM message, user
-			WHERE message.flagged = 0 AND message.author_id = user.user_id
-				AND (user.user_id = ? OR user.user_id IN
+		`SELECT message.*, users.* FROM message, users
+			WHERE message.flagged = 0 AND message.author_id = users.user_id
+				AND (users.user_id = ? OR users.user_id IN
 					(SELECT whom_id FROM follower WHERE who_id = ?))
 			ORDER BY message.pub_date DESC LIMIT ?
 		`, user_id, user_id, util.PER_PAGE).Scan(&messages).Error
@@ -86,8 +86,8 @@ func (repo UserRepository) SetUnfollow(who uint, whom uint) error {
 func (repo UserRepository) GetUsersFollowing(userId uint, limit int) ([]string, error) {
 	var usernames []string
 	err := repo.db.Raw(`
-        SELECT user.username FROM user
-                   INNER JOIN follower ON follower.whom_id=user.user_id
+        SELECT users.username FROM users
+                   INNER JOIN follower ON follower.whom_id=users.user_id
                    WHERE follower.who_id=?
                    LIMIT ?
         `, userId, limit).Scan(&usernames).Error

@@ -75,6 +75,7 @@ func (s *Server) InitRoutes() error {
 }
 
 func (s *Server) InitDB() error {
+	log.Println("Initializing DB")
 	err := s.db.AutoMigrate(
 		&model.User{},
 		&model.Follower{},

@@ -10,7 +10,7 @@ import (
 
 func GetDB() (*gorm.DB, error) {
 
-	db, err := gorm.Open(sqlite.Open("../../tmp/minitwit.db"), &gorm.Config{
+	db, err := gorm.Open(sqlite.Open("../tmp/minitwit.db"), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true,
 		},
