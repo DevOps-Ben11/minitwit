@@ -1,8 +1,8 @@
 package model
 
 type User struct {
-	User_id  uint `gorm:"primaryKey"`
-	Username string
+	User_id  uint   `gorm:"primaryKey"`
+	Username string `gorm:"index"`
 	Email    string
 	Pw_hash  string
 }
@@ -11,7 +11,7 @@ type Message struct {
 	Message_id uint `gorm:"primaryKey"`
 	Author_id  uint
 	Text       string
-	Pub_date   int64 `gorm:"autoCreateTime"`
+	Pub_date   int64 `gorm:"autoCreateTime;index"`
 	Flagged    bool
 }
 
