@@ -19,6 +19,7 @@ services:
     ports:
         - '80:5000'
         - '5000:5000'
+
   prmetheus:
     image: prom/prometheus
     container_name: prometheus

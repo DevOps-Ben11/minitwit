@@ -21,7 +21,6 @@ WORKDIR /app/backend
 RUN go build -tags prod -o main .
 
 # Expose port 5000 and 80 to the outside world
-EXPOSE 80
 EXPOSE 5000
 EXPOSE 80
 
