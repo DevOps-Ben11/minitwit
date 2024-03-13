@@ -3,7 +3,26 @@ package repository
 import (
 	"github.com/DevOps-Ben11/minitwit/backend/model"
 	"github.com/DevOps-Ben11/minitwit/backend/util"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"gorm.io/gorm"
+)
+
+var (
+	usersRegistered = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "minitwit_registrations",
+		Help: "The total number of registrations.",
+	})
+
+	usersFollowed = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "minitwit_follows",
+		Help: "The total number of follows.",
+	})
+
+	usersUnfollowed = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "minitwit_unfollows",
+		Help: "The total number of unfollows.",
+	})
 )
 
 type IUserRepository interface {
@@ -45,7 +64,11 @@ func (repo UserRepository) GetUserById(user_id uint) (user *model.User, ok bool)
 }
 
 func (repo UserRepository) InsertUser(username string, email string, password string) error {
-	return repo.db.Create(&model.User{Username: username, Email: email, Pw_hash: util.GeneratePasswordHash(password)}).Error
+  err := repo.db.Create(&model.User{Username: username, Email: email, Pw_hash: util.GeneratePasswordHash(password)}).Error
+  if err == nil {
+		usersRegistered.Inc()
+	}
+	return err
 }
 
 func (repo UserRepository) GetUserTimeline(user_id uint) ([]model.RenderMessage, error) {
@@ -70,8 +93,12 @@ func (repo UserRepository) GetIsFollowing(who uint, whom uint) bool {
 
 func (repo UserRepository) SetFollow(who uint, whom uint) error {
 	err := repo.db.Create(&model.Follower{Who_id: who, Whom_id: whom}).Error
+  if err == nil {
+		usersUnfollowed.Inc()
+	}
 	return err
 }
+
 func (repo UserRepository) SetUnfollow(who uint, whom uint) error {
 	err := repo.db.Delete(&model.Follower{}, "who_id=? and whom_id=?", who, whom).Error
 	return err

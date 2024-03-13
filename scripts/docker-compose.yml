@@ -14,8 +14,20 @@ services:
     # for the :z - https://stackoverflow.com/a/54787364
     volumes:
       - ../tmp:/app/tmp:z
-
+    
     # Exposing port from container to host
     ports:
-        - '5000:5000'
         - '80:5000'
+        - '5000:5000'
+  prmetheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ../prometheus.yml:/etc/prometheus/prometheus.yml:z
+      - ../prom_data:/prometheus:z
+    user: '0:0'
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+    ports:
+      - '9090:9090'
