@@ -13,7 +13,7 @@ import (
 type RegisterSimulator struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
-	PWD      string `json:"pwd"`
+	PWD      string `json:"password"`
 }
 
 func (s *Server) RegisterHandler(w http.ResponseWriter, r *http.Request) {
