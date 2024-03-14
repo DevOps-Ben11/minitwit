@@ -8,7 +8,6 @@ import (
 	"github.com/DevOps-Ben11/minitwit/backend/db"
 	"github.com/DevOps-Ben11/minitwit/backend/repository"
 	"github.com/gorilla/sessions"
-	"github.com/joho/godotenv"
 )
 
 const port = ":5000"
@@ -16,8 +15,6 @@ const DEBUG = true
 const SECRET_KEY = "development key"
 
 func main() {
-	godotenv.Load()
-
 	db, err := db.GetDB()
 
 	if err != nil {
