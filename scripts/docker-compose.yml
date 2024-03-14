@@ -6,6 +6,8 @@ networks:
 services:
   minitwit-image:
     image: ${DOCKER_USERNAME}/minitwit-image:latest
+    environment:
+      - PSQL_CON_STR=${PSQL_CON_STR}
     container_name: minitwit-image
 
     # Syncing host db to one on the container
@@ -17,6 +19,7 @@ services:
     ports:
         - '80:5000'
         - '5000:5000'
+
   prmetheus:
     image: prom/prometheus
     container_name: prometheus
