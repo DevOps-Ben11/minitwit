@@ -1,6 +1,6 @@
 body {
   background: #caece9;
-  font-family: "Trebuchet MS", sans-serif;
+  font-family: 'Trebuchet MS', sans-serif;
   font-size: 14px;
 }
 
@@ -12,23 +12,22 @@ a:hover {
   color: #333;
 }
 
-input[type="text"],
-input[type="password"] {
+input {
   background: white;
   border: 1px solid #bfe6e2;
   padding: 2px;
-  font-family: "Trebuchet MS", sans-serif;
+  font-family: 'Trebuchet MS', sans-serif;
   font-size: 14px;
   -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
   color: #105751;
 }
 
-input[type="submit"] {
+input[type='submit'] {
   background: #105751;
   border: 1px solid #073b36;
   padding: 1px 3px;
-  font-family: "Trebuchet MS", sans-serif;
+  font-family: 'Trebuchet MS', sans-serif;
   font-size: 14px;
   font-weight: bold;
   -moz-border-radius: 2px;
@@ -143,11 +142,11 @@ div.page div.twitbox p {
   margin: 0;
 }
 
-div.page div.twitbox input[type="text"] {
+div.page div.twitbox input[type='text'] {
   width: 585px;
 }
 
-div.page div.twitbox input[type="submit"] {
+div.page div.twitbox input[type='submit'] {
   width: 70px;
   margin-left: 5px;
 }

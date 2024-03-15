@@ -56,9 +56,9 @@ func (s *Server) InitRoutes() error {
 	simR.HandleFunc("/fllws/{username}", s.simProtect(s.FollowGetSimHandler)).Methods("GET")
 	simR.HandleFunc("/fllws/{username}", s.simProtect(s.FollowPostSimHandler)).Methods("POST")
 
-	// s.r.Use(s.Auth)
-
-	// s.r.HandleFunc("/register", s.RegisterHandler)
+	apiR := s.r.PathPrefix("/api").Subrouter()
+	apiR.Use(s.Auth)
+	apiR.HandleFunc("/register", s.RegisterHandler).Methods("POST")
 
 	// s.r.HandleFunc("/login", s.LoginHandler)
 	// s.r.HandleFunc("/logout", s.LogoutHandler)

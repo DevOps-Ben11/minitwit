@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/DevOps-Ben11/minitwit/backend/api"
 	"github.com/DevOps-Ben11/minitwit/backend/repository"
 	"github.com/gorilla/sessions"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
-	"log"
 )
 
 const port = ":5000"

@@ -1,78 +1,131 @@
-import React, { useState } from 'react';
-import "../style.css";
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react'
+import '../style.css'
+import { useNavigate } from 'react-router-dom'
+import { useForm, SubmitHandler } from 'react-hook-form'
+import { useCookies } from 'react-cookie'
+import axios from 'axios'
+import { Input } from '../components/Input'
 
-/*
-    This component for the registration handle few things for now:
-        - Check if both passwords are identical and send an error if not.
-        - Send a registration form to the backend via /sim/register (for now probably to change).
-        - Is informed is the user has been registered and send to timeline or an error message.
-
-    Issues I have:
-        - Is the JSON form sent to backend secured ?
-        - Is the user sign in after the registration or should we redirect to login page? 
-
-    Except for these issues I thing that this component do the job for now.
-*/
-
-const Register: React.FC = () => {
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [password2, setPassword2] = useState('');
-    const [error, setError] = useState('');
-
-    const navigate = useNavigate();
-
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
-        event.preventDefault();
-        const formData = {
-            username: username,
-            email: email,
-            password: password,
-        };
-
-        if (password !== password2) {
-            setError("Passwords do not match.");
-            return;
-        }
-
-        const response = await fetch('/sim/register', {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            setError(errorData.error_msg);
-        } else {
-            setError('');
-            navigate("/")
-        }
-    }
-
-    return (
-        <div>
-            <h2>Sign Up</h2>
-            {error && <div className="error"><strong>Error:</strong> {error}</div>}
-            <form onSubmit={handleSubmit}>
-                <dl>
-                    <dt>Username:</dt>
-                    <dd><input type="text" name="username" value={username} onChange={(e) => setUsername(e.target.value)} size={30} required /></dd>
-                    <dt>E-Mail:</dt>
-                    <dd><input type="text" name="email" value={email} onChange={(e) => setEmail(e.target.value)} size={30} required /></dd>
-                    <dt>Password:</dt>
-                    <dd><input type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} size={30} required /></dd>
-                    <dt>Password <small>(repeat)</small>:</dt>
-                    <dd><input type="password" name="password2" value={password2} onChange={(e) => setPassword2(e.target.value)} size={30} required /></dd>
-                </dl>
-                <div className="actions"><input type="submit" value="Sign Up" /></div>
-            </form>
-        </div>
-    );
+type FormValues = {
+  username: string
+  email: string
+  password: string
+  passwordRepeat: string
 }
 
-export default Register;
+const Register: React.FC = () => {
+  const [auth] = useCookies(['auth'])
+  const [error, setError] = useState<string | null>(null)
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+  } = useForm<FormValues>()
+  console.log(errors)
+  const navigate = useNavigate()
+
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    setError(null)
+
+    try {
+      await axios.post('/api/register', data)
+
+      navigate('/')
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data?.error_msg) {
+        setError(error.response.data.error_msg)
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (auth.auth) {
+      navigate('/')
+    }
+  }, [auth, navigate])
+  if (auth.auth) return null
+
+  return (
+    <div>
+      <h2>Sign Up</h2>
+      {error && (
+        <div className='error'>
+          <strong>Error:</strong> {error}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <dl>
+          <dt>
+            <label htmlFor='username'>Username:</label>
+          </dt>
+          <dd>
+            <Input
+              id='username'
+              {...register('username', {
+                required: 'You have to enter a username',
+              })}
+              error={errors.username?.message}
+            />
+          </dd>
+
+          <dt>
+            <label htmlFor='email'>E-Mail:</label>
+          </dt>
+          <dd>
+            <Input
+              id='email'
+              type='email'
+              {...register('email', {
+                required: 'You have to enter a valid email address',
+                validate: (value) =>
+                  value.includes('@') ||
+                  'You have to enter a valid email address',
+              })}
+              error={errors.email?.message}
+            />
+          </dd>
+
+          <dt>
+            <label htmlFor='email'>Label:</label>
+          </dt>
+          <dd>
+            <Input
+              id='password'
+              type='password'
+              {...register('password', {
+                required: 'You have to enter a password',
+              })}
+              error={errors.password?.message}
+            />
+          </dd>
+
+          <dt>
+            <label htmlFor='passwordRepeat'>
+              Password <small>(repeat)</small>:
+            </label>
+          </dt>
+          <dd>
+            <Input
+              type='password'
+              {...register('passwordRepeat', {
+                required: 'You have to enter a password',
+                validate: (value) =>
+                  value === getValues('password') ||
+                  'The two passwords do not match',
+              })}
+              error={errors.passwordRepeat?.message}
+            />
+          </dd>
+        </dl>
+
+        <div className='actions'>
+          <input type='submit' value='Sign Up' />
+        </div>
+      </form>
+    </div>
+  )
+}
+
+export default Register
