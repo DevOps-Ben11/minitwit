@@ -54,6 +54,14 @@ jobs:
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
 
+      - name: Sync config files
+        run: >
+          scp -i ~/.ssh/do_ssh_key
+          -o StrictHostKeyChecking=no
+          -r ./config root@138.68.126.8:/minitwit
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+
       - name: Deploy to server
         # Configure the ~./bash_profile and deploy.sh file on the Vagrantfile
         run: >
