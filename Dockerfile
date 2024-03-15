@@ -18,7 +18,7 @@ COPY ./web ./web
 WORKDIR /app/backend
 
 # Build the Go app
-RUN go build -tags prod -o main .
+RUN go build -o main .
 
 # Expose port 5000 and 80 to the outside world
 EXPOSE 5000
