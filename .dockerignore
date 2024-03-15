@@ -1,0 +1,13 @@
+**/.env
+**/*.db
+**/env.example
+**/.DS_Store
+flagtool
+old
+prom_data
+tmp
+.git
+.github
+.vagrant
+docs
+prometheus.yml

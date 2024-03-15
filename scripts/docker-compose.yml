@@ -10,11 +10,6 @@ services:
       - PSQL_CON_STR=${PSQL_CON_STR}
     container_name: minitwit-image
 
-    # Syncing host db to one on the container
-    # for the :z - https://stackoverflow.com/a/54787364
-    volumes:
-      - ../tmp:/app/tmp:z
-    
     # Exposing port from container to host
     ports:
         - '80:5000'
@@ -24,8 +19,8 @@ services:
     image: prom/prometheus
     container_name: prometheus
     volumes:
-      - ../prometheus.yml:/etc/prometheus/prometheus.yml:z
-      - ../prom_data:/prometheus:z
+      - ../prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../prom_data:/prometheus
     user: '0:0'
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
