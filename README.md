@@ -30,7 +30,7 @@ Finally, the database has been migrated from a SQLite database, running on the s
 - vagrant (Optional, for restarting server)
 
 ## Environments and Links 🔗
-- Public timeline:  [http://138.68.126.8:5000/public](http://138.68.126.8:5000/public)
+- Public timeline:  [http://138.68.126.8/public](http://138.68.126.8/public)
 - prometheus: [http://138.68.126.8:9090](http://138.68.126.8:9090)
 - Grafana: [http://138.68.126.8:8080](http://138.68.126.8:8080)
 - API link: `http://138.68.126.8:5000/sim/<Endpoint>`
