@@ -1,17 +1,30 @@
 package api
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/DevOps-Ben11/minitwit/backend/model"
 	"github.com/DevOps-Ben11/minitwit/backend/repository"
 	"github.com/DevOps-Ben11/minitwit/backend/util"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gorm.io/gorm"
+)
+
+var (
+	responseCounter = promauto.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "minitwit_http_response_total",
+		},
+		[]string{"handler", "status", "method"},
+	)
 )
 
 type Server struct {
@@ -48,6 +61,7 @@ func (s *Server) InitRoutes() error {
 	s.r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../web/static"))))
 
 	simR := s.r.PathPrefix("/sim").Subrouter()
+	simR.Use(s.StatusMonitoring)
 	simR.Use(s.LatestMiddleware)
 	simR.HandleFunc("/register", s.RegisterSimHandler).Methods("POST")
 	simR.HandleFunc("/latest", s.LatestHandler).Methods("GET")
@@ -144,4 +158,33 @@ func (s *Server) GetKeyVal(key string) (model.KeyVal, error) {
 func (s *Server) SetKeyVal(key string, value string) error {
 	err := s.db.Save(&model.KeyVal{Key: key, Value: value}).Error
 	return err
+}
+
+type responseWriter struct {
+	http.ResponseWriter
+	status int
+}
+
+func (rw *responseWriter) WriteHeader(code int) {
+	rw.status = code
+	rw.ResponseWriter.WriteHeader(code)
+}
+
+func (s *Server) StatusMonitoring(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		lrw := &responseWriter{ResponseWriter: w, status: 200}
+		next.ServeHTTP(lrw, r)
+		var handlerLabel string
+		route := mux.CurrentRoute(r)
+		if route != nil {
+			name := route.GetName()
+			if name != "" {
+				handlerLabel = name
+			}
+		}
+		fmt.Println(lrw.status)
+		status := strconv.Itoa(lrw.status)
+
+		responseCounter.WithLabelValues(handlerLabel, status, r.Method).Inc()
+	})
 }
