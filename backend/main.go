@@ -8,6 +8,7 @@ import (
 	"github.com/DevOps-Ben11/minitwit/backend/db"
 	"github.com/DevOps-Ben11/minitwit/backend/repository"
 	"github.com/gorilla/sessions"
+	"github.com/joho/godotenv"
 )
 
 const port = ":5000"
@@ -15,6 +16,10 @@ const DEBUG = true
 const SECRET_KEY = "development key"
 
 func main() {
+	dotErr := godotenv.Load()
+	if dotErr != nil {
+		log.Println("No .env found, continuing without")
+	}
 	db, err := db.GetDB()
 
 	if err != nil {
