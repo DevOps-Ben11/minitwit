@@ -63,13 +63,13 @@ func (s *Server) InitRoutes() error {
 	simR := s.r.PathPrefix("/sim").Subrouter()
 	simR.Use(s.StatusMonitoring)
 	simR.Use(s.LatestMiddleware)
-	simR.HandleFunc("/register", s.RegisterSimHandler).Methods("POST")
-	simR.HandleFunc("/latest", s.LatestHandler).Methods("GET")
-	simR.HandleFunc("/msgs/{username}", s.simProtect(s.MessageGetSimUserHandler)).Methods("GET")
-	simR.HandleFunc("/msgs/{username}", s.simProtect(s.MessagePostSimUserHandler)).Methods("POST")
-	simR.HandleFunc("/msgs", s.simProtect(s.MessagesSimHandler)).Methods("GET")
-	simR.HandleFunc("/fllws/{username}", s.simProtect(s.FollowGetSimHandler)).Methods("GET")
-	simR.HandleFunc("/fllws/{username}", s.simProtect(s.FollowPostSimHandler)).Methods("POST")
+	simR.HandleFunc("/register", s.RegisterSimHandler).Methods("POST").Name("Sim Register")
+	simR.HandleFunc("/latest", s.LatestHandler).Methods("GET").Name("Get Latest")
+	simR.HandleFunc("/msgs/{username}", s.simProtect(s.MessageGetSimUserHandler)).Methods("GET").Name("Sim Get User Messages")
+	simR.HandleFunc("/msgs/{username}", s.simProtect(s.MessagePostSimUserHandler)).Methods("POST").Name("Sim Post Message")
+	simR.HandleFunc("/msgs", s.simProtect(s.MessagesSimHandler)).Methods("GET").Name("Sim Get Public Messages")
+	simR.HandleFunc("/fllws/{username}", s.simProtect(s.FollowGetSimHandler)).Methods("GET").Name("Get Follows")
+	simR.HandleFunc("/fllws/{username}", s.simProtect(s.FollowPostSimHandler)).Methods("POST").Name("Post Follows")
 
 	s.r.Use(s.Auth)
 
@@ -182,7 +182,7 @@ func (s *Server) StatusMonitoring(next http.Handler) http.Handler {
 				handlerLabel = name
 			}
 		}
-		fmt.Println(lrw.status)
+
 		status := strconv.Itoa(lrw.status)
 
 		responseCounter.WithLabelValues(handlerLabel, status, r.Method).Inc()
