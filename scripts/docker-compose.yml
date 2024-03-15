@@ -5,15 +5,15 @@ networks:
 
 services:
   minitwit-image:
-    # image: ${DOCKER_USERNAME}/minitwit-image:latest
-    image: minitwit-image
+    image: ${DOCKER_USERNAME}/minitwit-image:latest
+    # image: minitwit-image
     environment:
       - PSQL_CON_STR=${PSQL_CON_STR}
     container_name: minitwit-image
 
     # Exposing port from container to host
     ports:
-        # - '80:5000'
+        - '80:5000'
         - '5000:5000'
 
   prmetheus:
