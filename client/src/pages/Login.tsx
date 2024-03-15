@@ -1,52 +1,93 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/lib/hooks/useAuth'
+import axios from 'axios'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useForm, SubmitHandler } from 'react-hook-form'
+import { Input } from '@/components/Input'
 
-const Login: React.FC = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-
-    const navigate = useNavigate();
-
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
-        event.preventDefault();
-        const formData = {
-            username: username,
-            password: password,
-        };
-        // TODO : create sim/login
-        const response = await fetch('/sim/login', {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            setError(errorData.error_msg);
-        } else {
-            setError('');
-            navigate("/")
-        }
-    }
-
-    return (
-        <div>
-            <h2>Sign in</h2>
-            {error && <div className="error"><strong>Error:</strong> {error}</div>}
-            <form onSubmit={handleSubmit}>
-                <dl>
-                    <dt>Username:</dt>
-                    <dd><input type="text" name="username" value={username} onChange={(e) => setUsername(e.target.value)} size={30} required /></dd>
-                    <dt>Password:</dt>
-                    <dd><input type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} size={30} required /></dd>
-                </dl>
-                <div className="actions"><input type="submit" value="Sign Up" /></div>
-            </form>
-        </div>
-    );
+type FormValues = {
+  username: string
+  email: string
+  password: string
 }
 
-export default Login;
+const Login = () => {
+  const { isAuthenticated, setUsername } = useAuth()
+  const [error, setError] = useState<string | null>(null)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>()
+
+  const navigate = useNavigate()
+
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    setError(null)
+
+    try {
+      await axios.post('/api/login', data)
+      setUsername(data.username)
+
+      navigate('/')
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data?.error_msg) {
+        setError(error.response.data.error_msg)
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/')
+    }
+  }, [isAuthenticated, navigate])
+  if (isAuthenticated) return null
+
+  return (
+    <div>
+      <h2>Sign in</h2>
+      {error && (
+        <div className='error'>
+          <strong>Error:</strong> {error}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <dl>
+          <dt>
+            <label htmlFor='username'>Username:</label>
+          </dt>
+          <dd>
+            <Input
+              id='username'
+              {...register('username', {
+                required: 'Invalid username',
+              })}
+              error={errors.username?.message}
+            />
+          </dd>
+          <dt>
+            <label htmlFor='password'>Password:</label>
+          </dt>
+          <dd>
+            <Input
+              id='password'
+              type='password'
+              {...register('password', {
+                required: 'Invalid password',
+              })}
+              error={errors.password?.message}
+            />
+          </dd>
+        </dl>
+
+        <div className='actions'>
+          <input type='submit' value='Sign Up' />
+        </div>
+      </form>
+    </div>
+  )
+}
+
+export default Login

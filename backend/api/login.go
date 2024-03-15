@@ -46,9 +46,21 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+	}
 
-		s.PushFlashMessage(w, r, "You were logged in")
-		http.Redirect(w, r, UrlFor("timeline", ""), http.StatusFound)
+	if errorStr != nil {
+		t := ErrReturn{Status: http.StatusBadRequest, ErrorMsg: *errorStr}
+		m, err := json.Marshal(t)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(m)
+	} else {
+		w.WriteHeader(http.StatusNoContent)
 	}
 }
 

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import '../style.css'
 import { useNavigate } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
-import { useCookies } from 'react-cookie'
+import { useAuth } from '@/lib/hooks/useAuth'
 import axios from 'axios'
-import { Input } from '../components/Input'
+import { Input } from '@/components/Input'
 
 type FormValues = {
   username: string
@@ -13,8 +13,8 @@ type FormValues = {
   passwordRepeat: string
 }
 
-const Register: React.FC = () => {
-  const [auth] = useCookies(['auth'])
+const Register = () => {
+  const { isAuthenticated } = useAuth()
   const [error, setError] = useState<string | null>(null)
   const {
     register,
@@ -22,7 +22,7 @@ const Register: React.FC = () => {
     getValues,
     formState: { errors },
   } = useForm<FormValues>()
-  console.log(errors)
+
   const navigate = useNavigate()
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
@@ -40,11 +40,11 @@ const Register: React.FC = () => {
   }
 
   useEffect(() => {
-    if (auth.auth) {
+    if (isAuthenticated) {
       navigate('/')
     }
-  }, [auth, navigate])
-  if (auth.auth) return null
+  }, [isAuthenticated, navigate])
+  if (isAuthenticated) return null
 
   return (
     <div>
@@ -88,7 +88,7 @@ const Register: React.FC = () => {
           </dd>
 
           <dt>
-            <label htmlFor='email'>Label:</label>
+            <label htmlFor='password'>Password:</label>
           </dt>
           <dd>
             <Input
@@ -108,6 +108,7 @@ const Register: React.FC = () => {
           </dt>
           <dd>
             <Input
+              id='passwordRepeat'
               type='password'
               {...register('passwordRepeat', {
                 required: 'You have to enter a password',

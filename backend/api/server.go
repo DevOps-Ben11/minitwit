@@ -60,8 +60,7 @@ func (s *Server) InitRoutes() error {
 	apiR := s.r.PathPrefix("/api").Subrouter()
 	apiR.Use(s.Auth)
 	apiR.HandleFunc("/register", s.RegisterHandler).Methods("POST")
-
-	// s.r.HandleFunc("/login", s.LoginHandler)
+	apiR.HandleFunc("/login", s.LoginHandler).Methods("POST")
 	// s.r.HandleFunc("/logout", s.LogoutHandler)
 
 	// s.r.HandleFunc("/public", s.PublicTimelineHandler)
