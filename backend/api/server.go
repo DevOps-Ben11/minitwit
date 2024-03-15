@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
