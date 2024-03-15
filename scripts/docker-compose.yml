@@ -20,8 +20,8 @@ services:
     image: prom/prometheus
     container_name: prometheus
     volumes:
-      - ../config/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ../prom_data:/prometheus
+      - ../config/prometheus.yml:/etc/prometheus/prometheus.yml:z
+      - ../prom_data:/prometheus:z
     user: '0:0'
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -33,6 +33,6 @@ services:
     ports:
       - "8080:3000"
     volumes:
-      - ../grafana_data/:/var/lib/grafana
-      - ../config:/etc/grafana/provisioning/datasources
+      - ../grafana_data/:/var/lib/grafana:z
+      - ../config:/etc/grafana/provisioning/datasources:z
     user: '0:0'
