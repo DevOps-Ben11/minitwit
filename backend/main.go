@@ -5,11 +5,9 @@ import (
 	"log"
 
 	"github.com/DevOps-Ben11/minitwit/backend/api"
+	"github.com/DevOps-Ben11/minitwit/backend/db"
 	"github.com/DevOps-Ben11/minitwit/backend/repository"
 	"github.com/gorilla/sessions"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
-	"gorm.io/gorm/schema"
 )
 
 const port = ":5000"
@@ -17,11 +15,7 @@ const DEBUG = true
 const SECRET_KEY = "development key"
 
 func main() {
-	db, err := gorm.Open(sqlite.Open("../tmp/minitwit.db"), &gorm.Config{
-		NamingStrategy: schema.NamingStrategy{
-			SingularTable: true,
-		},
-	})
+	db, err := db.GetDB()
 
 	if err != nil {
 		log.Fatalln("Could not open Database", err)

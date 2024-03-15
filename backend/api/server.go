@@ -10,6 +10,7 @@ import (
 	"github.com/DevOps-Ben11/minitwit/backend/util"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gorm.io/gorm"
 )
 
@@ -71,9 +72,7 @@ func (s *Server) InitRoutes() error {
 	// s.r.HandleFunc("/{username}", s.UserHandler)
 
 	// s.r.HandleFunc("/", s.protect(s.TimelineHandler))
-
-	// client := http.FileServer(http.Dir("../client/dist/"))
-	// s.r.PathPrefix("/").Handler(client)
+	s.r.Handle("/metrics", promhttp.Handler())
 
 	// Serve static files
 	s.r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("../client/dist/assets/"))))
@@ -86,6 +85,7 @@ func (s *Server) InitRoutes() error {
 }
 
 func (s *Server) InitDB() error {
+	log.Println("Initializing DB")
 	err := s.db.AutoMigrate(
 		&model.User{},
 		&model.Follower{},
