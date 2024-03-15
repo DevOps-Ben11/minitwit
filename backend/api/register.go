@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 )
@@ -14,15 +13,6 @@ type RegisterSimulator struct {
 }
 
 func (s *Server) RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	user_id, ok := s.GetCurrentUser(r)
-
-	fmt.Println(user_id, ok)
-	// If the user is authenticated, we don't want to register a new user
-	if ok || user_id != nil {
-		w.WriteHeader(http.StatusForbidden)
-		return
-	}
-
 	var body RegisterSimulator
 	json.NewDecoder(r.Body).Decode(&body)
 
