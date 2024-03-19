@@ -4,14 +4,26 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/DevOps-Ben11/minitwit/backend/model"
 	"github.com/DevOps-Ben11/minitwit/backend/repository"
 	"github.com/DevOps-Ben11/minitwit/backend/util"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gorm.io/gorm"
+)
+
+var (
+	responseCounter = promauto.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "minitwit_http_response_total",
+		},
+		[]string{"handler", "status", "method"},
+	)
 )
 
 type Server struct {
@@ -48,14 +60,15 @@ func (s *Server) InitRoutes() error {
 	// s.r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../web/static"))))
 
 	simR := s.r.PathPrefix("/sim").Subrouter()
+	simR.Use(s.StatusMonitoring)
 	simR.Use(s.LatestMiddleware)
-	simR.HandleFunc("/register", s.RegisterSimHandler).Methods("POST")
-	simR.HandleFunc("/latest", s.LatestHandler).Methods("GET")
-	simR.HandleFunc("/msgs/{username}", s.simProtect(s.MessageGetSimUserHandler)).Methods("GET")
-	simR.HandleFunc("/msgs/{username}", s.simProtect(s.MessagePostSimUserHandler)).Methods("POST")
-	simR.HandleFunc("/msgs", s.simProtect(s.MessagesSimHandler)).Methods("GET")
-	simR.HandleFunc("/fllws/{username}", s.simProtect(s.FollowGetSimHandler)).Methods("GET")
-	simR.HandleFunc("/fllws/{username}", s.simProtect(s.FollowPostSimHandler)).Methods("POST")
+	simR.HandleFunc("/register", s.RegisterSimHandler).Methods("POST").Name("Sim Register")
+	simR.HandleFunc("/latest", s.LatestHandler).Methods("GET").Name("Get Latest")
+	simR.HandleFunc("/msgs/{username}", s.simProtect(s.MessageGetSimUserHandler)).Methods("GET").Name("Sim Get User Messages")
+	simR.HandleFunc("/msgs/{username}", s.simProtect(s.MessagePostSimUserHandler)).Methods("POST").Name("Sim Post Message")
+	simR.HandleFunc("/msgs", s.simProtect(s.MessagesSimHandler)).Methods("GET").Name("Sim Get Public Messages")
+	simR.HandleFunc("/fllws/{username}", s.simProtect(s.FollowGetSimHandler)).Methods("GET").Name("Get Follows")
+	simR.HandleFunc("/fllws/{username}", s.simProtect(s.FollowPostSimHandler)).Methods("POST").Name("Post Follows")
 
 	apiR := s.r.PathPrefix("/api").Subrouter()
 	apiR.Use(s.Auth)
@@ -149,4 +162,33 @@ func (s *Server) GetKeyVal(key string) (model.KeyVal, error) {
 func (s *Server) SetKeyVal(key string, value string) error {
 	err := s.db.Save(&model.KeyVal{Key: key, Value: value}).Error
 	return err
+}
+
+type responseWriter struct {
+	http.ResponseWriter
+	status int
+}
+
+func (rw *responseWriter) WriteHeader(code int) {
+	rw.status = code
+	rw.ResponseWriter.WriteHeader(code)
+}
+
+func (s *Server) StatusMonitoring(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		lrw := &responseWriter{ResponseWriter: w, status: 200}
+		next.ServeHTTP(lrw, r)
+		var handlerLabel string
+		route := mux.CurrentRoute(r)
+		if route != nil {
+			name := route.GetName()
+			if name != "" {
+				handlerLabel = name
+			}
+		}
+
+		status := strconv.Itoa(lrw.status)
+
+		responseCounter.WithLabelValues(handlerLabel, status, r.Method).Inc()
+	})
 }
