@@ -7,3 +7,4 @@ __pycache__
 ./backend/main
 prom_data/
 grafana_data/
+loki_data/
