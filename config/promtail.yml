@@ -1,0 +1,26 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /promtail/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+    external_labels:
+      job: "{{.hostname}}"
+
+scrape_configs:
+  - job_name: docker-containers
+    static_configs:
+      - targets:
+          - localhost
+    pipeline_stages:
+      - docker:
+          labels:
+            app: minitwit-image
+          cri: docker
+          include_labels:
+            - '*'
+    refresh_interval: 1s
+

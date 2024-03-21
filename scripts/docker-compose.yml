@@ -5,8 +5,8 @@ networks:
 
 services:
   minitwit-image:
-    image: ${DOCKER_USERNAME}/minitwit-image:latest
-    # image: minitwit-image
+    #image: ${DOCKER_USERNAME}/minitwit-image:latest
+    image: minitwit-image
     environment:
       - PSQL_CON_STR=${PSQL_CON_STR}
     container_name: minitwit-image
@@ -36,3 +36,25 @@ services:
       - ../grafana_data/:/var/lib/grafana:z
       - ../config:/etc/grafana/provisioning/datasources:z
     user: '0:0'
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    volumes:
+      - ../prom_data:/promtail:z
+      - ../config/promtail.yml:/etc/promtail/promtail.yml:z
+      - /var/run/docker.sock:/var/run/docker.sock
+    command:
+      - '--config.file=/etc/promtail/promtail.yml'
+    user: '0:0'
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    volumes:
+      - ../loki_data:/loki:z
+      - ../config/loki.yml:/etc/loki/loki.yml:z
+    command:
+      - '--config.file=/etc/loki/loki.yml'
+    user: '0:0'
+
