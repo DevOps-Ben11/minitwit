@@ -75,7 +75,7 @@ jobs:
 
       - name: Get latest tag
         id: tag
-        run: echo "test=$(git tag | tail -1)" >> "$GITHUB_OUTPUT"
+        run: echo "test=hello" >> "$GITHUB_OUTPUT"
 
       # - name: Get next tag version
       #   id: semver
