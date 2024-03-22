@@ -75,7 +75,7 @@ jobs:
 
       - name: Get latest tag
         id: tag
-        run: echo "test=$(git tag --sort=version:refname | tail -1)" >> "$GITHUB_OUTPUT"
+        run: echo "test=$(git tag | tail -1)" >> "$GITHUB_OUTPUT"
 
       # - name: Get next tag version
       #   id: semver
@@ -84,7 +84,7 @@ jobs:
       #     version: ${{ steps.tag.outputs.test }}
 
       - name: Print
-        run: echo $(git tag --sort=version:refname | tail -1)
+        run: echo ${{ steps.tag.outputs.test }}
 
       # - name: Create release
       #   uses: actions/create-release@v1
