@@ -26,11 +26,19 @@ jobs:
         # - name: Run UI tests
         #   run: python3 test_itu_minitwit_ui.py
         #   working-directory: ../tests/
+        - name: run minitwit
+        #   working-directory: ./backend/
+          run: |
+            docker run --name my_postgres_db -e POSTGRES_PASSWORD=mysecretpassword -d -p 5431:5432 postgres
+            export PSQL_CON_STR="postgresql://postgres:mysecretpassword@host.docker.internal:5431/postgres"
+            docker build -t minitwit-image .
+            docker run -d -p 5000:5000 minitwit-image
+          
         - name: Run refactored tests
           run: python3 ./tests/refactored_minitwit_tests.py
 
         - name: setup python
-          uses: actions/setup-python@v2
+          uses: actions/setup-python@v4
           with:
             python-version: '3.x'
         # - name: Install python dependencies
