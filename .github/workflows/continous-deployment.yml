@@ -84,7 +84,7 @@ jobs:
       #     version: ${{ steps.tag.outputs.test }}
 
       - name: Print
-        run: echo ${{ steps.tag.outputs.test }}
+        run: echo $(git tag --sort=version:refname | tail -1)
 
       # - name: Create release
       #   uses: actions/create-release@v1
