@@ -3,7 +3,6 @@ package api
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -31,9 +30,8 @@ func (s *Server) Auth(next http.Handler) http.Handler {
 			return
 		}
 
-		log.Println(fmt.Sprintf("Authenticating request: %s %s\n", r.Method, r.URL))
+		log.Printf("Authenticating request: %s %s\n", r.Method, r.URL)
 
-		_, ok := s.GetCurrentUser(r)
 		session, err := s.store.Get(r, "auth")
 		if err != nil {
 			log.Println("Error getting session:", err)
