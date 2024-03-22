@@ -1,12 +1,9 @@
-name: UI Tests
+name: Integration CI
 
 on:
-  push:
+  pull_request:
     branches:
-      - testingCICD
-  # pull_request:
-  #     branches:
-  #     - main
+      - main
 
 jobs:
   build:
