@@ -15,14 +15,14 @@ jobs:
         steps:
         - uses: actions/checkout@v2
         - name: Install go dependencies
-          run: go get .
           working-directory: ../
+          run: go get .
         # - name: Run UI tests
         #   run: python3 test_itu_minitwit_ui.py
         #   working-directory: ../tests/
         - name: Run refactored tests
-          run: python3 refactored_minitwit_tests.py
           working-directory: ../tests/
+          run: python3 refactored_minitwit_tests.py
 
         - name: setup python
           uses: actions/setup-python@v2
@@ -36,5 +36,5 @@ jobs:
         #     wget https://github.com/mozilla/geckodriver/releases/download/v0.32.0/geckodriver-v0.32.0-linux64.tar.gz
             
         - name: Run simulator tests
-          run: python3 minitwit_sim_api_test.py
           working-directory: ../tests/
+          run: python3 minitwit_sim_api_test.py
