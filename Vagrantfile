@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
   # By default, vagrant will sync the current directory to /vagrant. We do not want that
   config.vm.synced_folder ".", "/vagrant", disabled: true
 
-  config.vm.define "minitwit-staging" do |server|
+  config.vm.define "minitwit-prod" do |server|
     # Define the DigitalOcean provider
     server.vm.provider :digital_ocean do |provider, override|
       # https://github.com/devopsgroup-io/vagrant-digitalocean/issues/277
@@ -24,7 +24,7 @@ Vagrant.configure("2") do |config|
       provider.size = "s-1vcpu-1gb"
     end
 
-    server.vm.hostname = "minitwit-staging"
+    server.vm.hostname = "minitwit-prod"
 
     # Setup environment variables on the server
     server.vm.provision "shell", inline: 'echo "export DOCKER_USERNAME=' + "'" + ENV["DOCKER_USERNAME"] + "'" + '" >> ~/.bash_profile'
