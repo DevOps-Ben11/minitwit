@@ -11,20 +11,23 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
-
+        
         steps:
+        
+        - name: Checkout
+          uses: actions/checkout@v4
+
         - name: install go-lang 
           uses: actions/setup-go@v4
           with:
             go-version: '1.22.x'
         - name: Install go dependencies
-          run: go install .
+          run: go get .
         # - name: Run UI tests
         #   run: python3 test_itu_minitwit_ui.py
         #   working-directory: ../tests/
         - name: Run refactored tests
-          working-directory: ../tests/
-          run: python3 refactored_minitwit_tests.py
+          run: python3 ./tests/refactored_minitwit_tests.py
 
         - name: setup python
           uses: actions/setup-python@v2
@@ -38,5 +41,4 @@ jobs:
         #     wget https://github.com/mozilla/geckodriver/releases/download/v0.32.0/geckodriver-v0.32.0-linux64.tar.gz
             
         - name: Run simulator tests
-          working-directory: ../tests/
-          run: python3 minitwit_sim_api_test.py
+          run: python3 ./tests/minitwit_sim_api_test.py
