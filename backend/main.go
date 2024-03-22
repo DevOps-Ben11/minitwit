@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/DevOps-Ben11/minitwit/backend/api"
@@ -35,12 +34,12 @@ func main() {
 
 	err = s.InitRoutes()
 	if err != nil {
-		log.Fatalln(fmt.Sprintf("Error when adding routes: %v", err))
+		log.Fatalf("Error when adding routes: %v\n", err)
 	}
 
 	err = s.InitDB()
 	if err != nil {
-		log.Fatalln(fmt.Sprintf("Error when initializing database: %v", err))
+		log.Fatalf("Error when initializing database: %v\n", err)
 	}
 
 	s.StartServer(port)

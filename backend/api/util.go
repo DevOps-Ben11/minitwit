@@ -88,5 +88,4 @@ func RetJson(w http.ResponseWriter, value any) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(t)
-	return
 }
