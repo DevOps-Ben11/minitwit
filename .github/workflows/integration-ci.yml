@@ -22,8 +22,6 @@ jobs:
       - name: Setup python dependancies
         run: |
           pip install requests
-          pip install selenium
-          pip install pymongo
           pip install pytest
       - name: start the database
         run: |
@@ -38,5 +36,3 @@ jobs:
         run: python3 ./tests/refactored_minitwit_tests.py
       - name: Run simulator tests
         run: python3 ./tests/minitwit_sim_api_test.py
-    # - name: Run UI tests
-    #   run: python3 test_itu_minitwit_ui.py
