@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  ci:
+  static-code-analysis:
     name: "Run CI"
     runs-on: ubuntu-latest
     steps:
