@@ -4,7 +4,7 @@ name: Continuous Deployment
 on:
   push:
     branches:
-      - staging
+      - main
 
 jobs:
   build:
@@ -29,9 +29,9 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/minitwit-image-staging:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/minitwit-image-staging:webbuildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/minitwit-image-staging:webbuildcache,mode=max
+          tags: ${{ secrets.DOCKER_USERNAME }}/minitwit-image:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/minitwit-image:webbuildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/minitwit-image:webbuildcache,mode=max
 
       - name: Configure SSH
         run: |
@@ -45,7 +45,7 @@ jobs:
         run: >
           scp -i ~/.ssh/do_ssh_key
           -o StrictHostKeyChecking=no
-          -r ./scripts root@46.101.214.108:/minitwit
+          -r ./scripts root@138.68.126.8:/minitwit
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
 
@@ -53,13 +53,13 @@ jobs:
         run: >
           scp -i ~/.ssh/do_ssh_key
           -o StrictHostKeyChecking=no
-          -r ./config root@46.101.214.108:/minitwit
+          -r ./config root@138.68.126.8:/minitwit
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
 
-      # - name: Deploy to server
-      #   # Configure the ~./bash_profile and deploy.sh file on the Vagrantfile
-      #   run: >
-      #     ssh root@46.101.214.108
-      #     -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
-      #     '/minitwit/scripts/deploy.sh'
+      - name: Deploy to server
+        # Configure the ~./bash_profile and deploy.sh file on the Vagrantfile
+        run: >
+          ssh root@138.68.126.8
+          -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
+          '/minitwit/scripts/deploy.sh'
