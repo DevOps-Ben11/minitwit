@@ -1,0 +1,37 @@
+name: UI Tests
+
+on:
+    pull_request:
+        branches:
+        - main 
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+        - uses: actions/checkout@v2
+        - name: Install go dependencies
+          run: go get .
+          working-directory: ../
+        # - name: Run UI tests
+        #   run: python3 test_itu_minitwit_ui.py
+        #   working-directory: ../tests/
+        - name: Run refactored tests
+          run: python3 refactored_minitwit_tests.py
+          working-directory: ../tests/
+
+        - name: setup python
+          uses: actions/setup-python@v2
+          with:
+            python-version: '3.x'
+        # - name: Install python dependencies
+        #   run: |
+        #     pip install selenium
+        #     pip install pymongo
+        #     pip install pytest
+        #     wget https://github.com/mozilla/geckodriver/releases/download/v0.32.0/geckodriver-v0.32.0-linux64.tar.gz
+            
+        - name: Run simulator tests
+          run: python3 minitwit_sim_api_test.py
+          working-directory: ../tests/
