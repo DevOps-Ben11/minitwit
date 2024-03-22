@@ -76,7 +76,7 @@ jobs:
         id: tag
         run: |
           git fetch --tags
-          echo "tag=$(git tag --sort=version:refname | grep -E '[0-9]' | tail -1)" >> "$GITHUB_OUTPUT"
+          echo "tag=$(git tag --sort=version:refname | tail -1)" >> "$GITHUB_OUTPUT"
 
       - name: Get next tag version
         id: semver
