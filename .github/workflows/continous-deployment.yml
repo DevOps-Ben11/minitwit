@@ -84,7 +84,9 @@ jobs:
           version: ${{ steps.tag.outputs.test }}
 
       - name: Print
-        run: echo ${{ steps.semver.outputs.patch }}
+        run: |
+          echo ${{ steps.semver.outputs.patch }}
+          echo ${{ steps.tag.outputs.test }}
 
       # - name: Create release
       #   uses: actions/create-release@v1
