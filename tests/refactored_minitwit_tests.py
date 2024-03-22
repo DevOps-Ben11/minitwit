@@ -137,7 +137,7 @@ def test_timelines():
     assert 'the message by foo' not in r.text
     assert 'the message by bar' in r.text
 
-# test_register()
+test_register()
 test_login_logout()
 test_message_recording()
 test_timelines()
