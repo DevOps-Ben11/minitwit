@@ -7,7 +7,7 @@ on:
 
 jobs:
   static-code-analysis:
-    name: "Run CI"
+    name: "Static Code Analysis"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
