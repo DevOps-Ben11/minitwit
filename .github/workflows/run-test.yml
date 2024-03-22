@@ -51,6 +51,9 @@ jobs:
           run: |
             docker build -t minitwit-image .
             docker run -d -p 5000:5000 minitwit-image
+        
+        - name: sleep 
+          run: sleep 60
  
         - name: Run refactored tests
           run: python3 ./tests/refactored_minitwit_tests.py
