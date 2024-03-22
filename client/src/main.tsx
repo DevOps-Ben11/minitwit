@@ -9,9 +9,8 @@ import Layout from './pages/Layout.tsx'
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
-      <Layout user={null}>
+      <Layout>
         <Routes>
-          {' '}
           {/* This is like a switch only rendering one component (Route) at a time. */}
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />

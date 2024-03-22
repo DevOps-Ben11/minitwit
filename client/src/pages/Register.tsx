@@ -30,8 +30,7 @@ const Register = () => {
 
     try {
       await axios.post('/api/register', data)
-
-      navigate('/')
+      navigate('/login')
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.data?.error_msg) {
         setError(error.response.data.error_msg)
