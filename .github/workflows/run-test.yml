@@ -23,8 +23,7 @@ jobs:
             go-version: '1.22.x'
         - name: Install go dependencies
           run: go get .
-        # - name: Run UI tests
-        #   run: python3 test_itu_minitwit_ui.py
+
         #   working-directory: ../tests/
         - name: run minitwit
         #   working-directory: ./backend/
@@ -34,19 +33,21 @@ jobs:
             docker build -t minitwit-image .
             docker run -d -p 5000:5000 minitwit-image
           
-        - name: Run refactored tests
-          run: python3 ./tests/refactored_minitwit_tests.py
-
+            
         - name: setup python
           uses: actions/setup-python@v4
           with:
             python-version: '3.x'
-        # - name: Install python dependencies
-        #   run: |
-        #     pip install selenium
-        #     pip install pymongo
-        #     pip install pytest
-        #     wget https://github.com/mozilla/geckodriver/releases/download/v0.32.0/geckodriver-v0.32.0-linux64.tar.gz
-            
+                # - name: Install python dependencies
+                #   run: |
+                #     pip install selenium
+                #     pip install pymongo
+                #     pip install pytest
+                #     wget https://github.com/mozilla/geckodriver/releases/download/v0.32.0/geckodriver-v0.32.0-linux64.tar.gz
+                
+        - name: Run refactored tests
+          run: python3 ./tests/refactored_minitwit_tests.py
         - name: Run simulator tests
-          run: python3 ./tests/minitwit_sim_api_test.py
+          run: python3 ./tests/minitwit_sim_api_test.py 
+        # - name: Run UI tests
+        #   run: python3 test_itu_minitwit_ui.py
