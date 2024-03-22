@@ -34,6 +34,7 @@ jobs:
             docker run -d -p 5000:5000 minitwit-image
           
             
+        
         - name: setup python
           uses: actions/setup-python@v4
           with:
@@ -45,6 +46,13 @@ jobs:
                 #     pip install pytest
                 #     wget https://github.com/mozilla/geckodriver/releases/download/v0.32.0/geckodriver-v0.32.0-linux64.tar.gz
                 
+        - name: Seetup python dependancies
+          run: |
+            pip install requests
+            pip install selenium
+            pip install pymongo
+            pip install pytest
+ 
         - name: Run refactored tests
           run: python3 ./tests/refactored_minitwit_tests.py
         - name: Run simulator tests
