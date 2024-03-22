@@ -77,15 +77,15 @@ jobs:
         id: tag
         run: echo "test=$(git tag --sort=version:refname | tail -1)" >> "$GITHUB_OUTPUT"
 
-      - name: Get next tag version
-        id: semver
-        uses: "WyriHaximus/github-action-next-semvers@v1"
-        with:
-          version: ${{ steps.tag.outputs.test }}
+      # - name: Get next tag version
+      #   id: semver
+      #   uses: "WyriHaximus/github-action-next-semvers@v1"
+      #   with:
+      #     version: ${{ steps.tag.outputs.test }}
 
       - name: Print
         run: |
-          echo ${{ steps.semver.outputs.patch }}
+          # echo ${{ steps.semver.outputs.patch }}
           echo ${{ steps.tag.outputs.test }}
 
       # - name: Create release
