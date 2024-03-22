@@ -5,7 +5,7 @@ networks:
 
 services:
   minitwit-image:
-    image: ${DOCKER_USERNAME}/minitwit-image:latest
+    image: ${DOCKER_USERNAME}/minitwit-image-staging:latest
     #image: minitwit-image
     labels: 
       logging: "promtail"
