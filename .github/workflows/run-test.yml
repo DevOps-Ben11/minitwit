@@ -36,10 +36,6 @@ jobs:
           docker build -t minitwit-image .
           docker run --network host -d -p 5000:5000 --env PSQL_CON_STR=postgresql://postgres:mysecretpassword@localhost:5431/postgres minitwit-image
 
-      - name: Run ps
-        run: docker ps
-      - name: Run curl
-        run: curl http://localhost:5000
       - name: Run refactored tests
         run: python3 ./tests/refactored_minitwit_tests.py
       - name: Run simulator tests
