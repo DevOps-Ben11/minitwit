@@ -3,13 +3,8 @@ name: Continuous Deployment
 
 on:
   push:
-    # Run workflow every time something is pushed to the main branch
     branches:
       - staging
-
-  # allow manual triggers for now too
-  workflow_dispatch:
-    manual: true
 
 jobs:
   build:
