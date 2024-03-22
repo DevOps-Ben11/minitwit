@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-    name: "Deploy to DigitalOcean"
     runs-on: ubuntu-latest
 
     steps:
@@ -68,7 +67,6 @@ jobs:
   # https://stackoverflow.com/a/74955554/10836486
   create-release:
     needs: build
-    name: "Create a Release"
     runs-on: ubuntu-latest
 
     steps:
@@ -80,7 +78,7 @@ jobs:
 
       - name: Get previous tag
         id: tag
-        uses: younited/get-previous-tag-action@v1.0.0
+        uses: actions-ecosystem/action-get-latest-tag@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -88,7 +86,7 @@ jobs:
         id: semver
         uses: "WyriHaximus/github-action-next-semvers@v1"
         with:
-          version: ${{ steps.tag.outputs.previous-tag }}
+          version: ${{ steps.tag.outputs.tag }}
 
       - name: Create release
         uses: actions/create-release@v1
