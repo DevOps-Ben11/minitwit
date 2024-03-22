@@ -16,7 +16,7 @@ jobs:
         - uses: actions/checkout@v2
         - name: Install go dependencies
           working-directory: ../
-          run: go get .
+          run: go install .
         # - name: Run UI tests
         #   run: python3 test_itu_minitwit_ui.py
         #   working-directory: ../tests/
