@@ -4,9 +4,7 @@ Vagrant.configure("2") do |config|
   config.vm.box_url = "https://github.com/devopsgroup-io/vagrant-digitalocean/raw/master/box/digital_ocean.box"
   config.ssh.private_key_path = '~/.ssh/id_rsa'
 
-  config.vm.synced_folder "./tmp", "/minitwit/tmp", type: "rsync"
   config.vm.synced_folder "./scripts", "/minitwit/scripts", type: "rsync"
-  # add config for prometheus
 
   # By default, vagrant will sync the current directory to /vagrant. We do not want that
   config.vm.synced_folder ".", "/vagrant", disabled: true
@@ -21,31 +19,22 @@ Vagrant.configure("2") do |config|
       provider.ssh_key_name = ENV["SSH_KEY_NAME"]
 
       provider.token = ENV["DIGITAL_OCEAN_TOKEN"]
-      provider.image = "fedora-39-x64"              # Choose your preferred OS image
-      provider.region = "fra1"                      # Choose your preferred region
-      provider.size = "s-1vcpu-1gb"                 # Choose your preferred droplet size
+      provider.image = "ubuntu-22-04-x64"
+      provider.region = "fra1"
+      provider.size = "s-1vcpu-1gb"
     end
 
     server.vm.hostname = "minitwit-prod"
 
+    # Setup environment variables on the server
     server.vm.provision "shell", inline: 'echo "export DOCKER_USERNAME=' + "'" + ENV["DOCKER_USERNAME"] + "'" + '" >> ~/.bash_profile'
-    server.vm.provision "shell", inline: 'echo "export DOCKER_PASSWORD=' + "'" + ENV["DOCKER_PASSWORD"] + "'" + '" >> ~/.bash_profile'
+    server.vm.provision "shell", inline: 'echo "export PSQL_CON_STR=' + "'" + ENV["PSQL_CON_STR"] + "'" + '" >> ~/.bash_profile'
 
-    # Give permissions to deploy.sh
+    # # Give permissions to scripts
     server.vm.provision "shell", inline: 'chmod +x /minitwit/scripts/deploy.sh'
+    server.vm.provision "shell", inline: 'chmod +x /minitwit/scripts/init.sh'
 
-    # Install packages
-    server.vm.provision "shell", inline: 'sudo dnf install sqlite -y'
-    server.vm.provision "shell", inline: 'sudo dnf install docker-compose -y'
-
-    # Configure Docker provisioner
-    server.vm.provision "docker" do |docker|
-      # docker.build_image "/minitwit",
-      #   args: "-t minitwit-image"
-        
-      # docker.run "minitwit-image",
-      #   args: "-d -p 5000:5000"
-
-    end
+    # Run init server script
+    server.vm.provision "shell", inline: 'bash /minitwit/scripts/init.sh'
   end
 end
