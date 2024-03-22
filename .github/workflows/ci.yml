@@ -1,4 +1,4 @@
-name: "CI"
+name: CI
 
 on:
   pull_request:
@@ -6,8 +6,8 @@ on:
       - main
 
 jobs:
-  ci:
-    name: "Run CI"
+  static-code-analysis:
+    name: "Static Code Analysis"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

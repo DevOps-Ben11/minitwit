@@ -59,9 +59,15 @@ export PSQL_CON_STR="postgresql://postgres:mysecretpassword@localhost:5431/postg
 5. Here you have 2 options for how to run the application. Run the go-lang file or create an image and run that. 
     1. **Go-lang** This can cause dependency issues however, to run it through go-lang, run: 
     ```
+    export PSQL_CON_STR="postgresql://postgres:mysecretpassword@localhost:5431/postgres"
+    ```
+    ```
     go run main.go
     ```
-    2. **Docker image** Alternativly, to avoid dependacy issues, you can build a docker image. and run, with:   
+    2. **Docker image** Alternativly, to avoid dependacy issues, you can build a docker image. and run, with:
+    ```   
+    export PSQL_CON_STR="postgresql://postgres:mysecretpassword@host.docker.internal:5431/postgres"
+    ```
     ```
     docker build -t minitwit-image .
     ```
