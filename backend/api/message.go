@@ -38,7 +38,6 @@ func (s *Server) AddMessageHandler(user *model.User, w http.ResponseWriter, r *h
 
 	s.PushFlashMessage(w, r, "Your message was recorded")
 	http.Redirect(w, r, UrlFor("timeline", ""), http.StatusFound)
-	return
 }
 
 func (s *Server) MessagesSimHandler(w http.ResponseWriter, r *http.Request) {
@@ -74,6 +73,7 @@ func (s *Server) MessagesSimHandler(w http.ResponseWriter, r *http.Request) {
 func (s *Server) MessageGetSimUserHandler(w http.ResponseWriter, r *http.Request) {
 	no := r.URL.Query().Get("no")
 	numMsgs := 100
+
 	if no != "" {
 		num, err := strconv.Atoi(no)
 		if err != nil {
@@ -84,8 +84,9 @@ func (s *Server) MessageGetSimUserHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	vars := mux.Vars(r)
-	username, _ := vars["username"]
+	username := vars["username"]
 	user, ok := s.userRepo.GetUser(username)
+
 	if !ok {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -123,8 +124,9 @@ func (s *Server) MessagePostSimUserHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	vars := mux.Vars(r)
-	username, _ := vars["username"]
+	username := vars["username"]
 	user, ok := s.userRepo.GetUser(username)
+
 	if !ok {
 		w.WriteHeader(http.StatusNotFound)
 		return
