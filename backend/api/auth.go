@@ -62,6 +62,7 @@ func (s *Server) Auth(next http.Handler) http.Handler {
 
 		// Continue with the request
 		next.ServeHTTP(w, newR)
+		return
 	})
 }
 
