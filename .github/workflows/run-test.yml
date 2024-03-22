@@ -1,9 +1,12 @@
 name: UI Tests
 
 on:
-    pull_request:
+    push:
         branches:
-        - main 
+        - testingCICD
+    # pull_request:
+    #     branches:
+    #     - main 
 
 jobs:
     build:
