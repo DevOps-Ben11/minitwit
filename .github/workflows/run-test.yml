@@ -45,12 +45,12 @@ jobs:
         - name: start the database
           run: |
             docker run --name my_postgres_db -e POSTGRES_PASSWORD=mysecretpassword -d -p 5431:5432 postgres
-            export PSQL_CON_STR="postgresql://postgres:mysecretpassword@localhost:5431/postgres"
+            export PSQL_CON_STR=postgresql://postgres:mysecretpassword@host.docker.internal:5431/postgres
         
         - name: build and run minitwit
           run: |
             docker build -t minitwit-image .
-            docker run -d -p 5000:5000 minitwit-image
+            docker run -d -p 5000:5000 --env PSQL_CON_STR minitwit-image
         
         - name: sleep 
           run: sleep 60
