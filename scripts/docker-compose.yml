@@ -6,7 +6,7 @@ networks:
 services:
   minitwit-image:
     image: ${DOCKER_USERNAME}/minitwit-image:latest
-    #image: minitwit-image
+    # image: minitwit-image
     labels: 
       logging: "promtail"
       logging_jobname: "containerlogs"
@@ -23,8 +23,8 @@ services:
     image: prom/prometheus
     container_name: prometheus
     volumes:
-      - ../config/prometheus.yml:/etc/prometheus/prometheus.yml:z
-      - ../prom_data:/prometheus:z
+      - ../config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../prom_data:/prometheus
     user: '0:0'
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -36,18 +36,18 @@ services:
     ports:
       - "8080:3000"
     volumes:
-      - ../grafana_data/:/var/lib/grafana:z
-      - ../config:/etc/grafana/provisioning/datasources:z
+      - ../grafana_data/:/var/lib/grafana
+      - ../config:/etc/grafana/provisioning/datasources
     user: '0:0'
 
   promtail:
     image: grafana/promtail:latest
     container_name: promtail
     volumes:
-      - ../prom_data:/promtail:z
-      - ../config/promtail.yml:/etc/promtail/promtail.yml:z
-      - /var/lib/docker/containers:/var/lib/docker/containers:z
-      - /var/run/docker.sock:/var/run/docker.sock:z
+      - ../prom_data:/promtail
+      - ../config/promtail.yml:/etc/promtail/promtail.yml
+      - /var/lib/docker/containers:/var/lib/docker/containers
+      - /var/run/docker.sock:/var/run/docker.sock
     command:
       - '--config.file=/etc/promtail/promtail.yml'
     user: '0:0'
@@ -57,7 +57,7 @@ services:
     ports:
       - 3100:3100
     volumes:
-      - ../loki_data:/loki:z
+      - ../loki_data:/loki
     command: -config.file=/etc/loki/local-config.yaml
     user: '0:0'
 
