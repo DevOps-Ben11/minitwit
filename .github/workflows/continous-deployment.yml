@@ -8,6 +8,7 @@ on:
 
 jobs:
   build:
+    name: "Deploy to DigitalOcean"
     runs-on: ubuntu-latest
 
     steps:
@@ -67,6 +68,7 @@ jobs:
   # https://stackoverflow.com/a/74955554/10836486
   create-release:
     needs: build
+    name: "Create a Release"
     runs-on: ubuntu-latest
 
     steps:
