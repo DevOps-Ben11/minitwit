@@ -1,60 +1,59 @@
 name: UI Tests
 
 on:
-    push:
-        branches:
-        - testingCICD
-    # pull_request:
-    #     branches:
-    #     - main 
+  push:
+    branches:
+      - testingCICD
+  # pull_request:
+  #     branches:
+  #     - main
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        
-        steps:
-        
-        - name: Checkout
-          uses: actions/checkout@v4
+  build:
+    runs-on: ubuntu-latest
 
-        - name: install go-lang 
-          uses: actions/setup-go@v4
-          with:
-            go-version: '1.22.x'
-        - name: Install go dependencies
-          run: go get .
-        
-        - name: setup python
-          uses: actions/setup-python@v4
-          with:
-            python-version: '3.x'
-                # - name: Install python dependencies
-                #   run: |
-                #     pip install selenium
-                #     pip install pymongo
-                #     pip install pytest
-                #     wget https://github.com/mozilla/geckodriver/releases/download/v0.32.0/geckodriver-v0.32.0-linux64.tar.gz
-                
-        - name: Setup python dependancies
-          run: |
-            pip install requests
-            pip install selenium
-            pip install pymongo
-            pip install pytest
-        #   working-directory: ../tests/
-        - name: start the database
-          run: |
-            docker run --name my_postgres_db -e POSTGRES_PASSWORD=mysecretpassword -d -p 5431:5432 postgres
-            export PSQL_CON_STR=postgresql://postgres:mysecretpassword@host.docker.internal:5431/postgres
-        
-        - name: build and run minitwit
-          run: |
-            docker build -t minitwit-image .
-            docker run -d -p 5000:5000 --env PSQL_CON_STR minitwit-image
- 
-        - name: Run refactored tests
-          run: python3 ./tests/refactored_minitwit_tests.py
-        - name: Run simulator tests
-          run: python3 ./tests/minitwit_sim_api_test.py 
-        # - name: Run UI tests
-        #   run: python3 test_itu_minitwit_ui.py
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: install go-lang
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.22.x"
+      - name: Install go dependencies
+        run: go get .
+
+      - name: setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version:
+            "3.x"
+            # - name: Install python dependencies
+            #   run: |
+            #     pip install selenium
+            #     pip install pymongo
+            #     pip install pytest
+            #     wget https://github.com/mozilla/geckodriver/releases/download/v0.32.0/geckodriver-v0.32.0-linux64.tar.gz
+
+      - name: Setup python dependancies
+        run: |
+          pip install requests
+          pip install selenium
+          pip install pymongo
+          pip install pytest
+      #   working-directory: ../tests/
+      - name: start the database
+        run: |
+          docker run --name my_postgres_db -e POSTGRES_PASSWORD=mysecretpassword -d -p 5431:5432 postgres
+
+      - name: build and run minitwit
+        run: |
+          docker build -t minitwit-image .
+          docker run -d -p 5000:5000 --env PSQL_CON_STR=postgresql://postgres:mysecretpassword@host.docker.internal:5431/postgres minitwit-image
+
+      - name: Run refactored tests
+        run: python3 ./tests/refactored_minitwit_tests.py
+      - name: Run simulator tests
+        run: python3 ./tests/minitwit_sim_api_test.py
+    # - name: Run UI tests
+    #   run: python3 test_itu_minitwit_ui.py
