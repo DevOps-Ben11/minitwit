@@ -66,6 +66,7 @@ jobs:
 
   # https://stackoverflow.com/a/74955554/10836486
   create-release:
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
