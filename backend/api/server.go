@@ -57,7 +57,7 @@ func (s *Server) GetStore() *sessions.CookieStore {
 }
 
 func (s *Server) InitRoutes() error {
-	s.r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../web/static"))))
+	// s.r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../web/static"))))
 
 	simR := s.r.PathPrefix("/sim").Subrouter()
 	simR.Use(s.StatusMonitoring)
@@ -70,23 +70,28 @@ func (s *Server) InitRoutes() error {
 	simR.HandleFunc("/fllws/{username}", s.simProtect(s.FollowGetSimHandler)).Methods("GET").Name("Get Follows")
 	simR.HandleFunc("/fllws/{username}", s.simProtect(s.FollowPostSimHandler)).Methods("POST").Name("Post Follows")
 
-	s.r.Use(s.Auth)
+	apiR := s.r.PathPrefix("/api").Subrouter()
+	apiR.Use(s.Auth)
+	apiR.HandleFunc("/register", s.RegisterHandler).Methods("POST")
+	apiR.HandleFunc("/login", s.LoginHandler).Methods("POST")
+	apiR.HandleFunc("/logout", s.LogoutHandler).Methods("GET")
 
-	s.r.HandleFunc("/register", s.RegisterHandler)
+	// s.r.HandleFunc("/public", s.PublicTimelineHandler)
+	// s.r.HandleFunc("/add_message", s.protect(s.AddMessageHandler)).Methods("POST")
 
-	s.r.HandleFunc("/login", s.LoginHandler)
-	s.r.HandleFunc("/logout", s.LogoutHandler)
+	// s.r.HandleFunc("/{username}/follow", s.protect(s.FollowHandler))
+	// s.r.HandleFunc("/{username}/unfollow", s.protect(s.UnfollowHandler))
+	// s.r.HandleFunc("/{username}", s.UserHandler)
 
-	s.r.HandleFunc("/public", s.PublicTimelineHandler)
-	s.r.HandleFunc("/add_message", s.protect(s.AddMessageHandler)).Methods("POST")
-
+	// s.r.HandleFunc("/", s.protect(s.TimelineHandler))
 	s.r.Handle("/metrics", promhttp.Handler())
 
-	s.r.HandleFunc("/{username}/follow", s.protect(s.FollowHandler))
-	s.r.HandleFunc("/{username}/unfollow", s.protect(s.UnfollowHandler))
-	s.r.HandleFunc("/{username}", s.UserHandler)
+	// Serve static files
+	s.r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("../client/dist/assets/"))))
 
-	s.r.HandleFunc("/", s.protect(s.TimelineHandler))
+	s.r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "../client/dist/index.html")
+	})
 
 	return nil
 }
