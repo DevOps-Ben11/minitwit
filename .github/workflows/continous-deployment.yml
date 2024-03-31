@@ -64,23 +64,19 @@ jobs:
           -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
           '/minitwit/scripts/deploy.sh'
 
-  # https://stackoverflow.com/a/74955554/10836486
   create-release:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          # required for github-action-get-previous-tag
-          fetch-depth: 0
+        uses: actions/checkout@v4
 
-      - name: Get previous tag
+      - name: Get latest tag
         id: tag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git fetch --tags
+          echo "tag=$(git tag --sort=version:refname | tail -1)" >> "$GITHUB_OUTPUT"
 
       - name: Get next tag version
         id: semver

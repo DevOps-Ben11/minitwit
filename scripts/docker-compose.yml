@@ -7,6 +7,7 @@ services:
   minitwit-image:
     image: ${DOCKER_USERNAME}/minitwit-image:latest
     # image: minitwit-image
+
     labels: 
       logging: "promtail"
       logging_jobname: "containerlogs"
