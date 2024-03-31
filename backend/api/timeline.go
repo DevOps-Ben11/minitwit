@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"html/template"
 	"log"
 	"net/http"
@@ -63,7 +64,15 @@ func (s *Server) PublicTimelineHandler(w http.ResponseWriter, r *http.Request) {
 		Flashes:  s.GetFlashedMessages(w, r),
 	}
 
-	s.RenderTimeline(w, data)
+	m, err := json.Marshal(data)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(m)
 }
 
 func (s *Server) UserHandler(w http.ResponseWriter, r *http.Request) {

@@ -7,8 +7,10 @@ export default defineConfig({
   plugins: [react(), tsconfigPaths()],
 
   server: {
+    open: true,
     proxy: {
       '/api': 'http://localhost:5000',
+      '/sim': 'http://localhost:5000',
     },
   },
 })

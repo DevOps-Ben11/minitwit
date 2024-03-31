@@ -1,31 +1,24 @@
 import { useAuth } from '@/lib/hooks/useAuth'
 import axios from 'axios'
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 type Props = {
   children: React.ReactNode
 }
 
-// function deleteCookie(name: string) {
-//   document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-// }
-
 const Layout = ({ children }: Props) => {
   const { isAuthenticated, username } = useAuth()
-  const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate()
 
-  const handleLogout = async (data: any) => {
-    setError(null)
+  const handleLogout = async () => {
     try {
-      await axios.get('/api/logout', data)
+      await axios.post('/api/logout')
 
+      navigate('/')
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.data?.error_msg) {
-        setError(error.response.data.error_msg)
-      }
+      console.error(error)
     }
-  };
+  }
 
   return (
     <div className='page'>
@@ -34,18 +27,13 @@ const Layout = ({ children }: Props) => {
       <div className='navigation'>
         {isAuthenticated ? (
           <>
-            <Link to='/timeline'>my timeline</Link> |
-            <Link to='/public_timeline'>public timeline</Link> |
-            <Link to='/logout' onClick={handleLogout}>sign out [{username}]</Link>
-            {error && (
-        <div className='error'>
-          <strong>Error:</strong> {error}
-        </div>
-      )}
+            <Link to='/'>my timeline</Link> |
+            <Link to='/public'>public timeline</Link> |
+            <button onClick={handleLogout}>sign out [{username}]</button>
           </>
         ) : (
           <>
-            <Link to='/public_timeline'>public timeline</Link> |
+            <Link to='/public'>public timeline</Link> |
             <Link to='/register'>sign up</Link> |
             <Link to='/login'>sign in</Link>
           </>
@@ -54,7 +42,7 @@ const Layout = ({ children }: Props) => {
 
       <div className='body'>{children}</div>
 
-      <div className='footer'>MiniTwit &mdash; A Go Application</div>
+      <div className='footer'>MiniTwit &mdash; A Go - React Application</div>
     </div>
   )
 }

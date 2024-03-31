@@ -74,9 +74,9 @@ func (s *Server) InitRoutes() error {
 	apiR.Use(s.Auth)
 	apiR.HandleFunc("/register", s.RegisterHandler).Methods("POST")
 	apiR.HandleFunc("/login", s.LoginHandler).Methods("POST")
-	apiR.HandleFunc("/logout", s.LogoutHandler).Methods("GET")
+	apiR.HandleFunc("/logout", s.LogoutHandler).Methods("POST")
 
-	// s.r.HandleFunc("/public", s.PublicTimelineHandler)
+	apiR.HandleFunc("/public", s.PublicTimelineHandler).Methods("GET")
 	// s.r.HandleFunc("/add_message", s.protect(s.AddMessageHandler)).Methods("POST")
 
 	// s.r.HandleFunc("/{username}/follow", s.protect(s.FollowHandler))

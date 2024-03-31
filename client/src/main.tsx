@@ -5,17 +5,18 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Login from './pages/Login.tsx'
 import Register from './pages/Register.tsx'
 import Layout from './pages/Layout.tsx'
+import { Public } from './pages/Public.tsx'
+import './style.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
       <Layout>
         <Routes>
-          {/* This is like a switch only rendering one component (Route) at a time. */}
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
-          <Route path='*' element={<App />} />{' '}
-          {/* This mean every path should lead to main page if not created. */}
+          <Route path='/public' element={<Public />} />
+          <Route path='*' element={<App />} />
         </Routes>
       </Layout>
     </BrowserRouter>

@@ -60,26 +60,31 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write(m)
 	} else {
-		w.WriteHeader(http.StatusNoContent)
+		w.WriteHeader(http.StatusOK)
 	}
 }
 
 func (s *Server) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := s.GetStore().Get(r, "auth")
+
 	if err != nil {
 		log.Println("Error getting session", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
 	for k := range session.Values {
 		delete(session.Values, k)
 	}
+	session.Options.MaxAge = -1
+
 	err = session.Save(r, w)
+
 	if err != nil {
 		log.Println("Error loggin out:", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	s.PushFlashMessage(w, r, "You were logged out")
-	http.Redirect(w, r, UrlFor("public_timeline", ""), http.StatusFound)
+
+	w.WriteHeader(http.StatusOK)
 }

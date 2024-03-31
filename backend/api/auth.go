@@ -33,6 +33,7 @@ func (s *Server) Auth(next http.Handler) http.Handler {
 		log.Printf("Authenticating request: %s %s\n", r.Method, r.URL)
 
 		session, err := s.store.Get(r, "auth")
+
 		if err != nil {
 			log.Println("Error getting session:", err)
 			w.WriteHeader(http.StatusInternalServerError)
