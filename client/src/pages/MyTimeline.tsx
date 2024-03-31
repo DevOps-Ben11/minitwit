@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 type Response = {
   Followed: boolean
   Messages: Message[]
+  User: User
 }
 
 type Message = {
@@ -15,14 +16,20 @@ type Message = {
   Text: string
 }
 
-export const Public = () => {
+type User = {
+  Username: string
+}
+
+export const MyTimeline = () => {
   const [messages, setMessages] = useState<Message[]>([])
+  const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
-    console.log('ASDASD')
     const fetchMessages = async () => {
-      const response = await axios.get<Response>('/api/public')
+      const response = await axios.get<Response>('/api/timeline')
+      console.log(response)
       setMessages(response.data.Messages)
+      setUser(response.data.User)
     }
 
     fetchMessages()
@@ -30,7 +37,19 @@ export const Public = () => {
 
   return (
     <div>
-      <h2>Public Timeline</h2>
+      <h2>My Timeline</h2>
+
+      {user && (
+        <div className='twitbox'>
+          <h3>What's on your mind {user.Username}?</h3>
+          <form>
+            <p>
+              <input type='text' name='text' />
+              <input type='submit' value='Share' />
+            </p>
+          </form>
+        </div>
+      )}
 
       <ul className='messages'>
         {messages && messages.length > 0 ? (

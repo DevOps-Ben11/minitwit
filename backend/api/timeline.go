@@ -40,11 +40,17 @@ func (s *Server) TimelineHandler(user *model.User, w http.ResponseWriter, r *htt
 	data := model.Template{
 		User:     user,
 		Messages: messages,
-		Request:  model.RenderRequest{Endpoint: "timeline"},
-		Flashes:  s.GetFlashedMessages(w, r),
 	}
 
-	s.RenderTimeline(w, data)
+	m, err := json.Marshal(data)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(m)
 }
 
 func (s *Server) PublicTimelineHandler(w http.ResponseWriter, r *http.Request) {
@@ -58,10 +64,8 @@ func (s *Server) PublicTimelineHandler(w http.ResponseWriter, r *http.Request) {
 	user, _ := s.GetCurrentUser(r)
 
 	data := model.Template{
-		Request:  model.RenderRequest{Endpoint: "public"},
 		Messages: messages,
 		User:     user,
-		Flashes:  s.GetFlashedMessages(w, r),
 	}
 
 	m, err := json.Marshal(data)

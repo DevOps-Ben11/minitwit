@@ -82,8 +82,8 @@ func (s *Server) InitRoutes() error {
 	// s.r.HandleFunc("/{username}/follow", s.protect(s.FollowHandler))
 	// s.r.HandleFunc("/{username}/unfollow", s.protect(s.UnfollowHandler))
 	// s.r.HandleFunc("/{username}", s.UserHandler)
+	apiR.HandleFunc("/timeline", s.protect(s.TimelineHandler)).Methods("GET")
 
-	// s.r.HandleFunc("/", s.protect(s.TimelineHandler))
 	s.r.Handle("/metrics", promhttp.Handler())
 
 	// Serve static files
