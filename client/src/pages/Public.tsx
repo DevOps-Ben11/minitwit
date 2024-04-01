@@ -20,7 +20,6 @@ export const Public = () => {
   const [messages, setMessages] = useState<Message[]>([])
 
   useEffect(() => {
-    console.log('ASDASD')
     const fetchMessages = async () => {
       const response = await axios.get<Response>('/api/public')
       setMessages(response.data.Messages)

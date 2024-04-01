@@ -12,7 +12,7 @@ RUN go build -o main .
 FROM node:20.11.1-bullseye-slim AS react-builder
 WORKDIR /app
 COPY ./client/package.json ./client/package-lock.json ./
-RUN npm install
+RUN npm install --ignore-scripts
 COPY ./client/ .
 RUN npm run build
 

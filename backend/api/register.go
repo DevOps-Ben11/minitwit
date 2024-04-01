@@ -6,14 +6,20 @@ import (
 	"strings"
 )
 
-type RegisterSimulator struct {
+type Register struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
 	PWD      string `json:"password"`
 }
 
+type RegisterSimulator struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	PWD      string `json:"pwd"`
+}
+
 func (s *Server) RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	var body RegisterSimulator
+	var body Register
 	json.NewDecoder(r.Body).Decode(&body)
 
 	username := body.Username
@@ -54,7 +60,7 @@ func (s *Server) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write(m)
 	} else {
-		w.WriteHeader(http.StatusNoContent)
+		w.WriteHeader(http.StatusOK)
 	}
 }
 
