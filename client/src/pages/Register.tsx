@@ -4,6 +4,7 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 import { useAuth } from '@/lib/hooks/useAuth'
 import axios from 'axios'
 import { Input } from '@/components/Input'
+import { PageWrapper } from '@/components/PageWrapper'
 
 type FormValues = {
   username: string
@@ -45,7 +46,7 @@ const Register = () => {
   if (isAuthenticated) return null
 
   return (
-    <div>
+    <PageWrapper>
       <h2>Sign Up</h2>
       {error && (
         <div className='error'>
@@ -123,7 +124,7 @@ const Register = () => {
           <input type='submit' value='Sign Up' />
         </div>
       </form>
-    </div>
+    </PageWrapper>
   )
 }
 

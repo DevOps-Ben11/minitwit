@@ -1,5 +1,7 @@
+import { PageWrapper } from '@/components/PageWrapper'
+import { TweetBox } from '@/components/TweetBox'
 import axios from 'axios'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Gravatar from 'react-gravatar'
 import { Link } from 'react-router-dom'
 
@@ -23,32 +25,33 @@ type User = {
 export const MyTimeline = () => {
   const [messages, setMessages] = useState<Message[]>([])
   const [user, setUser] = useState<User | null>(null)
+  const [flashMessage, setFlashMessage] = useState<string | null>(null)
 
-  useEffect(() => {
-    const fetchMessages = async () => {
-      const response = await axios.get<Response>('/api/timeline')
-      console.log(response)
-      setMessages(response.data.Messages)
-      setUser(response.data.User)
-    }
+  const fetchMessages = useCallback(async () => {
+    const response = await axios.get<Response>('/api/timeline')
 
-    fetchMessages()
+    setMessages(response.data.Messages)
+    setUser(response.data.User)
   }, [])
 
+  useEffect(() => {
+    fetchMessages()
+  }, [fetchMessages])
+
+  const handleAddMessageSuccess = () => {
+    fetchMessages()
+    setFlashMessage('Your message was recorded')
+  }
+
   return (
-    <div>
+    <PageWrapper flashMessage={flashMessage}>
       <h2>My Timeline</h2>
 
       {user && (
-        <div className='twitbox'>
-          <h3>What's on your mind {user.Username}?</h3>
-          <form>
-            <p>
-              <input type='text' name='text' />
-              <input type='submit' value='Share' />
-            </p>
-          </form>
-        </div>
+        <TweetBox
+          handleCTA={handleAddMessageSuccess}
+          username={user.Username}
+        />
       )}
 
       <ul className='messages'>
@@ -74,6 +77,6 @@ export const MyTimeline = () => {
           </li>
         )}
       </ul>
-    </div>
+    </PageWrapper>
   )
 }

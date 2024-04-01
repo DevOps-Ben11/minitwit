@@ -10,25 +10,25 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type AddMessage struct {
+	Message string `json:"message"`
+}
+
 func (s *Server) AddMessageHandler(user *model.User, w http.ResponseWriter, r *http.Request) {
 	// Register a new message from a user
+	var body AddMessage
+	json.NewDecoder(r.Body).Decode(&body)
 
-	err := r.ParseForm()
-	if err != nil {
+	message := body.Message
+
+	// early return if empty
+	if message == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	vals := r.PostForm
-
-	// early return if empty form
-	if vals.Get("text") == "" {
-		http.Redirect(w, r, UrlFor("timeline", ""), http.StatusFound)
 
 		return
 	}
 
-	err = s.msgRepo.AddMessage(user, vals.Get("text"))
+	err := s.msgRepo.AddMessage(user, message)
 
 	if err != nil {
 		log.Println("Error creating message: ", err)
@@ -36,8 +36,7 @@ func (s *Server) AddMessageHandler(user *model.User, w http.ResponseWriter, r *h
 		return
 	}
 
-	s.PushFlashMessage(w, r, "Your message was recorded")
-	http.Redirect(w, r, UrlFor("timeline", ""), http.StatusFound)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (s *Server) MessagesSimHandler(w http.ResponseWriter, r *http.Request) {

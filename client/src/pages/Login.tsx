@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { Input } from '@/components/Input'
+import { PageWrapper } from '@/components/PageWrapper'
 
 type FormValues = {
   username: string
@@ -45,7 +46,7 @@ const Login = () => {
   if (isAuthenticated) return null
 
   return (
-    <div>
+    <PageWrapper>
       <h2>Sign in</h2>
       {error && (
         <div className='error'>
@@ -86,7 +87,7 @@ const Login = () => {
           <input type='submit' value='Sign Up' />
         </div>
       </form>
-    </div>
+    </PageWrapper>
   )
 }
 

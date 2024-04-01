@@ -155,7 +155,16 @@ div.page div.twitbox p {
 }
 
 div.page div.twitbox input[type='text'] {
-  width: 585px;
+  width: 100%;
+}
+
+div.page div.twitbox-form {
+  display: flex;
+  gap: 10px;
+}
+
+div.page div.twitbox-form > div:first-child {
+  flex: 1;
 }
 
 div.page div.twitbox input[type='submit'] {
@@ -185,5 +194,10 @@ div.error {
   -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
   padding: 4px;
+  font-size: 13px;
+}
+
+.input-component__error {
+  color: #dd6f6f;
   font-size: 13px;
 }

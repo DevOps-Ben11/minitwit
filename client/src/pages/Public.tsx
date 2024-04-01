@@ -1,3 +1,4 @@
+import { PageWrapper } from '@/components/PageWrapper'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import Gravatar from 'react-gravatar'
@@ -29,7 +30,7 @@ export const Public = () => {
   }, [])
 
   return (
-    <div>
+    <PageWrapper>
       <h2>Public Timeline</h2>
 
       <ul className='messages'>
@@ -55,6 +56,6 @@ export const Public = () => {
           </li>
         )}
       </ul>
-    </div>
+    </PageWrapper>
   )
 }

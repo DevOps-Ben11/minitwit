@@ -40,7 +40,7 @@ const Layout = ({ children }: Props) => {
         )}
       </div>
 
-      <div className='body'>{children}</div>
+      {children}
 
       <div className='footer'>MiniTwit &mdash; A Go - React Application</div>
     </div>
