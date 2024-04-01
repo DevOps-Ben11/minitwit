@@ -44,6 +44,7 @@ const UnAuthenticatedApp = () => {
       <Route path='/login' element={<Login />} />
       <Route path='/register' element={<Register />} />
       <Route path='/' element={<Public />} />
+      <Route path='/public' element={<Public />} />
       <Route path='/:username' element={<Timeline />} />
       <Route path='*' element={<Public />} />
     </Routes>

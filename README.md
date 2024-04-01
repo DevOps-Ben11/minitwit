@@ -16,12 +16,14 @@ Further more, a monitoring system has been added to the application, using prome
 Finally, the database has been migrated from a SQLite database, running on the same droplet as the website, to a postgres PSQL database running on a seperate droplet.
 
 ## Topics 
-- [Requirements](#requirements-⚙️)
-- [Environments and Links](#environments-and-links-🔗)
-- [Starting the project](#starting-the-project-🛠)
-- [Deployment](#deployment)
-- [API](#api-docs)
-- [Vagrant](#vagrant)
+- [ITU MiniTwit WEB application](#itu-minitwit-web-application)
+  - [Topics](#topics)
+  - [Requirements ⚙️](#requirements-️)
+  - [Environments and Links 🔗](#environments-and-links-)
+  - [Starting the project 🛠](#starting-the-project-)
+  - [Deployment](#deployment)
+  - [API docs](#api-docs)
+  - [Vagrant](#vagrant)
 
 ## Requirements ⚙️
 - go-lang

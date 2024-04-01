@@ -2,31 +2,13 @@ package api
 
 import (
 	"encoding/json"
-	"html/template"
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
-
 	"github.com/DevOps-Ben11/minitwit/backend/model"
 	"github.com/DevOps-Ben11/minitwit/backend/util"
+	"github.com/gorilla/mux"
 )
-
-func (s *Server) RenderTimeline(w http.ResponseWriter, data model.Template) {
-	t, err := template.New("layout.html").Funcs(s.GetFuncMap()).ParseFiles("../web/templates/layout.html", "../web/templates/timeline.html")
-
-	if err != nil {
-		log.Println("Error creating template:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	if err = t.Execute(w, data); err != nil {
-		log.Println("Error rendering frontend:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-}
 
 func (s *Server) TimelineHandler(user *model.User, w http.ResponseWriter, r *http.Request) {
 	var messages []model.RenderMessage
@@ -107,9 +89,7 @@ func (s *Server) UserHandler(w http.ResponseWriter, r *http.Request) {
 		User:     user,
 		Profile:  profile,
 		Messages: messages,
-		Request:  model.RenderRequest{Endpoint: "user_timeline"},
 		Followed: followed,
-		Flashes:  s.GetFlashedMessages(w, r),
 	}
 
 	m, err := json.Marshal(data)

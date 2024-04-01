@@ -1,28 +1,32 @@
-# Start from the official golang image
-FROM golang:latest
-
-# Set the Current Working Directory inside the container
+# Backend
+FROM golang:latest AS go-builder
 WORKDIR /app
-
-# Copy go mod and sum files
 COPY go.mod ./
 COPY go.sum ./
-
-# Download all dependencies
 RUN go mod download
-
-# Copy the source code from the current directory to the Working Directory inside the container
-COPY ./backend ./backend
-COPY ./web ./web
-
+COPY ./backend/ ./backend
 WORKDIR /app/backend
-
-# Build the Go app
 RUN go build -o main .
+
+# Frontend
+FROM node:20.11.1-bullseye-slim AS react-builder
+WORKDIR /app
+COPY ./client/package.json ./client/package-lock.json ./
+RUN npm install
+COPY ./client/ .
+RUN npm run build
+
+# Final image
+FROM golang:latest
+WORKDIR /app
+
+COPY --from=go-builder /app/backend/main ./backend/main
+COPY --from=react-builder /app/dist ./client/dist
 
 # Expose port 5000 and 80 to the outside world
 EXPOSE 5000
 EXPOSE 80
+WORKDIR /app/backend
 
 # Command to run the executable
 CMD ["./main"]

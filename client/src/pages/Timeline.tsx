@@ -105,7 +105,7 @@ export const Timeline = () => {
     <PageWrapper flashMessage={flashMessage}>
       <h2>{username}'s Timeline </h2>
 
-      <div className='followstatus'>{renderFollowStatus()}</div>
+      {user && <div className='followstatus'>{renderFollowStatus()}</div>}
 
       <ul className='messages'>
         {messages && messages.length > 0 ? (

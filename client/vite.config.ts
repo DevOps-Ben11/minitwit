@@ -10,7 +10,6 @@ export default defineConfig({
     open: true,
     proxy: {
       '/api': 'http://localhost:5000',
-      '/sim': 'http://localhost:5000',
     },
   },
 })

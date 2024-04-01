@@ -16,7 +16,6 @@ func (s *Server) protect(next AuthHandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, ok := s.GetCurrentUser(r)
 		if !ok || user == nil {
-			// http.Redirect(w, r, UrlFor("public_timeline", ""), http.StatusFound)
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
