@@ -78,11 +78,11 @@ func (s *Server) InitRoutes() error {
 
 	apiR.HandleFunc("/public", s.PublicTimelineHandler).Methods("GET")
 	apiR.HandleFunc("/add_message", s.protect(s.AddMessageHandler)).Methods("POST")
-
-	// s.r.HandleFunc("/{username}/follow", s.protect(s.FollowHandler))
-	// s.r.HandleFunc("/{username}/unfollow", s.protect(s.UnfollowHandler))
-	// s.r.HandleFunc("/{username}", s.UserHandler)
 	apiR.HandleFunc("/timeline", s.protect(s.TimelineHandler)).Methods("GET")
+
+	apiR.HandleFunc("/{username}/follow", s.protect(s.FollowHandler)).Methods("POST")
+	apiR.HandleFunc("/{username}/unfollow", s.protect(s.UnfollowHandler)).Methods("POST")
+	apiR.HandleFunc("/timeline/{username}", s.UserHandler).Methods("GET")
 
 	s.r.Handle("/metrics", promhttp.Handler())
 

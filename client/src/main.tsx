@@ -7,8 +7,9 @@ import Register from './pages/Register.tsx'
 import Layout from './pages/Layout.tsx'
 import { Public } from './pages/Public.tsx'
 import { MyTimeline } from './pages/MyTimeline.tsx'
-import './style.css'
 import { useAuth } from './lib/hooks/useAuth.tsx'
+import { Timeline } from './pages/Timeline.tsx'
+import './style.css'
 
 const App = () => {
   const { isAuthenticated } = useAuth()
@@ -31,6 +32,7 @@ const AuthenticatedApp = () => {
     <Routes>
       <Route path='/public' element={<Public />} />
       <Route path='/' element={<MyTimeline />} />
+      <Route path='/:username' element={<Timeline />} />
       <Route path='*' element={<MyTimeline />} />
     </Routes>
   )
@@ -42,6 +44,7 @@ const UnAuthenticatedApp = () => {
       <Route path='/login' element={<Login />} />
       <Route path='/register' element={<Register />} />
       <Route path='/' element={<Public />} />
+      <Route path='/:username' element={<Timeline />} />
       <Route path='*' element={<Public />} />
     </Routes>
   )

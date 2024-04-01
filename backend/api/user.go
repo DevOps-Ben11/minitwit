@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -27,9 +26,7 @@ func (s *Server) FollowHandler(user *model.User, w http.ResponseWriter, r *http.
 		return
 	}
 
-	s.PushFlashMessage(w, r, fmt.Sprintf("You are now following \"%s\"", profil.Username))
-	http.Redirect(w, r, UrlFor("user_timeline", profil.Username), http.StatusFound)
-
+	w.WriteHeader(http.StatusOK)
 }
 
 func (s *Server) UnfollowHandler(user *model.User, w http.ResponseWriter, r *http.Request) {
@@ -48,9 +45,7 @@ func (s *Server) UnfollowHandler(user *model.User, w http.ResponseWriter, r *htt
 		return
 	}
 
-	s.PushFlashMessage(w, r, fmt.Sprintf("You are no longer following \"%s\"", profil.Username))
-	http.Redirect(w, r, UrlFor("user_timeline", profil.Username), http.StatusFound)
-
+	w.WriteHeader(http.StatusOK)
 }
 
 func (s *Server) FollowGetSimHandler(w http.ResponseWriter, r *http.Request) {

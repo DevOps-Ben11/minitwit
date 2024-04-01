@@ -79,6 +79,19 @@ div.page div.navigation button {
   text-decoration: underline;
 }
 
+.follow,
+.unfollow {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: normal;
+  cursor: pointer;
+  outline: inherit;
+  text-decoration: underline;
+  color: #26776f;
+}
+
 div.page h2 {
   margin: 0 0 15px 0;
   color: #105751;
