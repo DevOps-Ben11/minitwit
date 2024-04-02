@@ -70,5 +70,7 @@ export const FollowStatus = ({
   }
 
   if (!user || !profile) return null
-  return <div className='followstatus'>{renderFollowStatus(user.Username)}</div>
+  return (
+    <div className='followstatus'>{renderFollowStatus(profile.Username)}</div>
+  )
 }
