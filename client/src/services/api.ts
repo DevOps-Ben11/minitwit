@@ -13,3 +13,9 @@ export const getPublicTimeline = async () =>
 
 export const getTimeline = async () =>
   await axios.get<TimelineResponse>('/api/timeline')
+
+export const followUser = async (username: string) =>
+  await axios.post(`/api/${username}/follow`)
+
+export const unFollowUser = async (username: string) =>
+  await axios.post(`/api/${username}/unfollow`)

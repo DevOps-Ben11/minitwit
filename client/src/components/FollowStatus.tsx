@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { User } from '@/services/api.types'
-import axios from 'axios'
+import { followUser, unFollowUser } from '@/services/api'
 
 type Props = {
   user: User | undefined
@@ -16,33 +16,32 @@ export const FollowStatus = ({
   setFlashMessage,
 }: Props) => {
   const [following, setFollowing] = useState<boolean>(false)
-  const profileUsername = profile?.Username
 
   useEffect(() => {
     setFollowing(isByDefaultFollowing)
   }, [isByDefaultFollowing])
 
-  const handleUnfollow = async () => {
+  const handleUnFollow = async (username: string) => {
     try {
-      await axios.post(`/api/${profileUsername}/unfollow`)
-      setFlashMessage(`You are no longer following "${profileUsername}"`)
+      await unFollowUser(username)
+      setFlashMessage(`You are no longer following "${username}"`)
       setFollowing(false)
     } catch (error) {
       console.error(error)
     }
   }
 
-  const handleFollow = async () => {
+  const handleFollow = async (username: string) => {
     try {
-      await axios.post(`/api/${profileUsername}/follow`)
-      setFlashMessage(`You are now following "${profileUsername}"`)
+      await followUser(username)
+      setFlashMessage(`You are now following "${username}"`)
       setFollowing(true)
     } catch (error) {
       console.error(error)
     }
   }
 
-  const renderFollowStatus = () => {
+  const renderFollowStatus = (username: string) => {
     if (profile?.User_id === user?.User_id) {
       return 'This is you!'
     }
@@ -51,7 +50,7 @@ export const FollowStatus = ({
       return (
         <>
           You are currently following this user.{' '}
-          <button className='unfollow' onClick={handleUnfollow}>
+          <button className='unfollow' onClick={() => handleUnFollow(username)}>
             Unfollow user
           </button>
           .
@@ -62,7 +61,7 @@ export const FollowStatus = ({
     return (
       <>
         You are not yet following this user.{' '}
-        <button className='unfollow' onClick={handleFollow}>
+        <button className='follow' onClick={() => handleFollow(username)}>
           Follow user
         </button>
         .
@@ -71,5 +70,5 @@ export const FollowStatus = ({
   }
 
   if (!user || !profile) return null
-  return <div className='followstatus'>{renderFollowStatus()}</div>
+  return <div className='followstatus'>{renderFollowStatus(user.Username)}</div>
 }

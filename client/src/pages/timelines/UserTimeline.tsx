@@ -6,7 +6,7 @@ import { UserTimelineResponse } from '@/services/api.types'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-export const Timeline = () => {
+export const UserTimeline = () => {
   const { username } = useParams<{ username: string }>()
   const navigate = useNavigate()
 

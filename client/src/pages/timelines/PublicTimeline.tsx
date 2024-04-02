@@ -5,7 +5,7 @@ import { Message } from '@/services/api.types'
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
-export const Public = () => {
+export const PublicTimeline = () => {
   const { state } = useLocation()
   const [messages, setMessages] = useState<Message[]>([])
 
