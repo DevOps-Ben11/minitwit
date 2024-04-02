@@ -14,7 +14,9 @@ const Layout = ({ children }: Props) => {
     try {
       await axios.post('/api/logout')
 
-      navigate('/')
+      navigate('/public', {
+        state: { flashMessage: 'You were logged out' },
+      })
     } catch (error) {
       console.error(error)
     }

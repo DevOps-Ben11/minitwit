@@ -1,36 +1,18 @@
+import { MessageList } from '@/components/MessageList'
 import { PageWrapper } from '@/components/PageWrapper'
+import { getUserTimeline } from '@/services/api'
+import { UserTimelineResponse } from '@/services/api.types'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import Gravatar from 'react-gravatar'
-import { Link, useNavigate, useParams } from 'react-router-dom'
-
-type Response = {
-  Followed: boolean
-  Messages: Message[]
-  User: User
-  Profile: User
-}
-
-type Message = {
-  Username: string
-  Pub_date: number
-  Email: string
-  Text: string
-}
-
-type User = {
-  Username: string
-  User_id: number
-}
+import { useNavigate, useParams } from 'react-router-dom'
 
 export const Timeline = () => {
   const { username } = useParams<{ username: string }>()
-  const [messages, setMessages] = useState<Message[]>([])
-  const [user, setUser] = useState<User | null>(null)
-  const [profile, setProfile] = useState<User | null>(null)
+  const navigate = useNavigate()
+
+  const [timeline, setTimeline] = useState<UserTimelineResponse>()
   const [following, setFollowing] = useState<boolean>(false)
   const [flashMessage, setFlashMessage] = useState<string | null>(null)
-  const navigate = useNavigate()
 
   useEffect(() => {
     if (!username) {
@@ -39,11 +21,9 @@ export const Timeline = () => {
 
     const fetchMessages = async () => {
       try {
-        const response = await axios.get<Response>(`/api/timeline/${username}`)
+        const response = await getUserTimeline(username)
 
-        setMessages(response.data.Messages)
-        setUser(response.data.User)
-        setProfile(response.data.Profile)
+        setTimeline(response.data)
         setFollowing(response.data.Followed)
       } catch (error) {
         navigate('/')
@@ -74,7 +54,7 @@ export const Timeline = () => {
   }
 
   const renderFollowStatus = () => {
-    if (profile?.User_id === user?.User_id) {
+    if (timeline?.Profile?.User_id === timeline?.User?.User_id) {
       return 'This is you!'
     }
 
@@ -105,31 +85,11 @@ export const Timeline = () => {
     <PageWrapper flashMessage={flashMessage}>
       <h2>{username}'s Timeline </h2>
 
-      {user && <div className='followstatus'>{renderFollowStatus()}</div>}
+      {timeline?.User && (
+        <div className='followstatus'>{renderFollowStatus()}</div>
+      )}
 
-      <ul className='messages'>
-        {messages && messages.length > 0 ? (
-          messages.map((message, index) => (
-            <li key={index}>
-              <Gravatar email={message.Email} size={48} />
-
-              <p>
-                <strong>
-                  <Link to={`/${message.Username}`}>{message.Username}</Link>
-                </strong>{' '}
-                {message.Text}{' '}
-                <small>
-                  &mdash; {new Date(message.Pub_date * 1000).toLocaleString()}
-                </small>
-              </p>
-            </li>
-          ))
-        ) : (
-          <li>
-            <em>There's no message so far.</em>
-          </li>
-        )}
-      </ul>
+      <MessageList messages={timeline?.Messages} />
     </PageWrapper>
   )
 }
