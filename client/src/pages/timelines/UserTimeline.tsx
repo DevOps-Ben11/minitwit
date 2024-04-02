@@ -12,6 +12,7 @@ export const UserTimeline = () => {
 
   const [timeline, setTimeline] = useState<UserTimelineResponse>()
   const [flashMessage, setFlashMessage] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     if (!username) {
@@ -24,6 +25,8 @@ export const UserTimeline = () => {
         setTimeline(response.data)
       } catch (error) {
         navigate('/public')
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -34,14 +37,20 @@ export const UserTimeline = () => {
     <PageWrapper flashMessage={flashMessage}>
       <h2>{username}'s Timeline </h2>
 
-      <FollowStatus
-        user={timeline?.User}
-        profile={timeline?.Profile}
-        isByDefaultFollowing={timeline?.Followed}
-        setFlashMessage={setFlashMessage}
-      />
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          <FollowStatus
+            user={timeline?.User}
+            profile={timeline?.Profile}
+            isByDefaultFollowing={timeline?.Followed}
+            setFlashMessage={setFlashMessage}
+          />
 
-      <MessageList messages={timeline?.Messages} />
+          <MessageList messages={timeline?.Messages} />
+        </>
+      )}
     </PageWrapper>
   )
 }
