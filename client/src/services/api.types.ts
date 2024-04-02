@@ -21,7 +21,7 @@ export type Message = {
   Text: string
 }
 
-type User = {
+export type User = {
   Username: string
   User_id: number
 }
