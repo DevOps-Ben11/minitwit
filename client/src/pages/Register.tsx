@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
-import { useAuth } from '@/lib/hooks/useAuth'
 import axios from 'axios'
 import { Input } from '@/components/Input'
 import { PageWrapper } from '@/components/PageWrapper'
@@ -13,8 +12,7 @@ type FormValues = {
   passwordRepeat: string
 }
 
-const Register = () => {
-  const { isAuthenticated } = useAuth()
+export const Register = () => {
   const [error, setError] = useState<string | null>(null)
   const {
     register,
@@ -30,20 +28,18 @@ const Register = () => {
 
     try {
       await axios.post('/api/register', data)
-      navigate('/login')
+
+      navigate('/login', {
+        state: {
+          flashMessage: 'You were successfully registered and can login now',
+        },
+      })
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.data?.error_msg) {
         setError(error.response.data.error_msg)
       }
     }
   }
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/')
-    }
-  }, [isAuthenticated, navigate])
-  if (isAuthenticated) return null
 
   return (
     <PageWrapper>
@@ -127,5 +123,3 @@ const Register = () => {
     </PageWrapper>
   )
 }
-
-export default Register
