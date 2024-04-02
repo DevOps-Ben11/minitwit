@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+      - feature/react
 
 jobs:
   integration:
@@ -23,6 +24,16 @@ jobs:
         run: |
           pip install requests
           pip install pytest
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.11.1"
+
+      - name: Install dependencies
+        working-directory: ./client
+        run: npm ci
+
       - name: start the database
         run: |
           docker run --name my_postgres_db -e POSTGRES_PASSWORD=mysecretpassword -d -p 5431:5432 postgres

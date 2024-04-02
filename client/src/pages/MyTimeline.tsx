@@ -44,7 +44,7 @@ export const MyTimeline = () => {
   }
 
   return (
-    <PageWrapper flashMessage={flashMessage}>
+    <PageWrapper data-testid='my-timeline-page' flashMessage={flashMessage}>
       <h2>My Timeline</h2>
 
       {user && (
