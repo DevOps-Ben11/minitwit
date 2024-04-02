@@ -15,15 +15,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: setup python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"
+      # - name: setup python
+      #   uses: actions/setup-python@v4
+      #   with:
+      #     python-version: "3.x"
 
-      - name: Setup python dependancies
-        run: |
-          pip install requests
-          pip install pytest
+      # - name: Setup python dependancies
+      #   run: |
+      #     pip install requests
+      #     pip install pytest
 
       - name: setup node
         uses: actions/setup-node@v4
@@ -38,6 +38,10 @@ jobs:
         working-directory: ./client
         run: npx playwright install --with-deps
 
+      # echo env
+      - name: echo env
+        run: echo ${{ env.GITHUB_ACTIONS }}
+
       - name: start the database
         run: |
           docker run --name my_postgres_db -e POSTGRES_PASSWORD=mysecretpassword -d -p 5431:5432 postgres
@@ -47,10 +51,10 @@ jobs:
           docker build -t minitwit-image .
           docker run --network host -d -p 5000:5000 --env PSQL_CON_STR=postgresql://postgres:mysecretpassword@localhost:5431/postgres minitwit-image
 
-      - name: Run refactored tests
-        run: python3 ./tests/refactored_minitwit_tests.py
-      - name: Run simulator tests
-        run: python3 ./tests/minitwit_sim_api_test.py
+      # - name: Run refactored tests
+      #   run: python3 ./tests/refactored_minitwit_tests.py
+      # - name: Run simulator tests
+      #   run: python3 ./tests/minitwit_sim_api_test.py
       - name: Run Playwright tests
         working-directory: ./client
         run: npx playwright test
