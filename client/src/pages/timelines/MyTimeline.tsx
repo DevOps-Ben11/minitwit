@@ -1,3 +1,4 @@
+import { TimelineSkeleton } from '@/components/TimelineSkeleton'
 import { MessageList } from '@/components/MessageList'
 import { PageWrapper } from '@/components/PageWrapper'
 import { TweetBox } from '@/components/TweetBox'
@@ -11,11 +12,19 @@ export const MyTimeline = () => {
 
   const [timeline, setTimeline] = useState<TimelineResponse>()
   const [flashMessage, setFlashMessage] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   const fetchMessages = useCallback(async () => {
-    const response = await getTimeline()
+    try {
+      setIsLoading(true)
+      const response = await getTimeline()
 
-    setTimeline(response.data)
+      setTimeline(response.data)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setIsLoading(false)
+    }
   }, [])
 
   useEffect(() => {
@@ -31,14 +40,18 @@ export const MyTimeline = () => {
     <PageWrapper flashMessage={flashMessage || (state && state.flashMessage)}>
       <h2>My Timeline</h2>
 
-      {timeline?.User && (
-        <TweetBox
-          handleCTA={handleAddMessageSuccess}
-          username={timeline.User.Username}
-        />
-      )}
+      <TimelineSkeleton isLoading={isLoading}>
+        <>
+          {timeline?.User && (
+            <TweetBox
+              handleCTA={handleAddMessageSuccess}
+              username={timeline.User.Username}
+            />
+          )}
 
-      <MessageList messages={timeline?.Messages} />
+          <MessageList messages={timeline?.Messages} />
+        </>
+      </TimelineSkeleton>
     </PageWrapper>
   )
 }

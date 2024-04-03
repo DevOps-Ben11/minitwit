@@ -1,4 +1,5 @@
 import { FollowStatus } from '@/components/FollowStatus'
+import { TimelineSkeleton } from '@/components/TimelineSkeleton'
 import { MessageList } from '@/components/MessageList'
 import { PageWrapper } from '@/components/PageWrapper'
 import { getUserTimeline } from '@/services/api'
@@ -37,9 +38,7 @@ export const UserTimeline = () => {
     <PageWrapper flashMessage={flashMessage}>
       <h2>{username}'s Timeline </h2>
 
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : (
+      <TimelineSkeleton isLoading={isLoading}>
         <>
           <FollowStatus
             user={timeline?.User}
@@ -50,7 +49,7 @@ export const UserTimeline = () => {
 
           <MessageList messages={timeline?.Messages} />
         </>
-      )}
+      </TimelineSkeleton>
     </PageWrapper>
   )
 }

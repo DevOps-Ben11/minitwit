@@ -118,7 +118,8 @@ div.page div.followstatus {
   font-size: 13px;
 }
 
-div.page ul.messages {
+div.page ul.messages,
+div.page ul.timeline-skeleton {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -146,6 +147,43 @@ div.page ul.messages li img {
 div.page ul.messages li small {
   font-size: 0.9em;
   color: #888;
+}
+
+div.page ul.timeline-skeleton li.message-skeleton {
+  margin: 10px 0;
+  padding: 5px;
+  background: #f0faf9;
+  border: 1px solid #dbf3f1;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  min-height: 48px;
+  display: flex;
+  gap: 10px;
+}
+
+div.page ul.timeline-skeleton div.message-skeleton__avatar {
+  width: 48px;
+  height: 48px;
+  background: #e3ebea;
+  animation: pulse 2.5s infinite;
+}
+
+div.page ul.timeline-skeleton div.message-skeleton__content {
+  width: calc(100% - 48px);
+  background: #e3ebea;
+  animation: pulse 2.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    background-color: #e3ebea;
+  }
+  50% {
+    background-color: #f0faf9;
+  }
+  100% {
+    background-color: #e3ebea;
+  }
 }
 
 div.page div.twitbox {
