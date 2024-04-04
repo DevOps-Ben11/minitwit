@@ -16,6 +16,6 @@ type Message struct {
 }
 
 type Follower struct {
-	Who_id  uint `gorm:"primaryKey;autoIncrement:false"`
+	Who_id  uint `gorm:"primaryKey;autoIncrement:false;index"`
 	Whom_id uint `gorm:"primaryKey;autoIncrement:false"`
 }
