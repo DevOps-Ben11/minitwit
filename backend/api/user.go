@@ -82,6 +82,7 @@ func (s *Server) FollowPostSimHandler(w http.ResponseWriter, r *http.Request) {
 	username := vars["username"]
 	user, ok := s.userRepo.GetUser(username)
 	if !ok {
+		log.Println("FollowPostSimHandler: Error getting user:", username)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -92,6 +93,7 @@ func (s *Server) FollowPostSimHandler(w http.ResponseWriter, r *http.Request) {
 	var body tmp
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
+		log.Println("FollowPostSimHandler: Error decoding body:", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -99,11 +101,13 @@ func (s *Server) FollowPostSimHandler(w http.ResponseWriter, r *http.Request) {
 	if body.Follow != "" {
 		follows, ok := s.userRepo.GetUser(body.Follow)
 		if !ok {
+			log.Println("FollowPostSimHandler: Error getting user to follow:", body.Follow)
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
 		err := s.userRepo.SetFollow(user.User_id, follows.User_id)
 		if err != nil {
+			log.Println("FollowPostSimHandler: Error setting follow", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -112,17 +116,17 @@ func (s *Server) FollowPostSimHandler(w http.ResponseWriter, r *http.Request) {
 	} else if body.Unfollow != "" {
 		unfollows, ok := s.userRepo.GetUser(body.Unfollow)
 		if !ok {
+			log.Println("FollowPostSimHandler: Error getting user to unfollow:", body.Unfollow)
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
 		err := s.userRepo.SetUnfollow(user.User_id, unfollows.User_id)
 		if err != nil {
+			log.Println("FollowPostSimHandler: Error setting unfollow", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 		w.WriteHeader(http.StatusNoContent)
 		return
-
 	}
-
 }

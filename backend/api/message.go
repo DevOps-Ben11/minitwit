@@ -118,6 +118,7 @@ func (s *Server) MessagePostSimUserHandler(w http.ResponseWriter, r *http.Reques
 	var body MessagePost
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
+		log.Println("MessagePostSimUserHandler: Error decoding body:", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -127,12 +128,14 @@ func (s *Server) MessagePostSimUserHandler(w http.ResponseWriter, r *http.Reques
 	user, ok := s.userRepo.GetUser(username)
 
 	if !ok {
+		log.Println("MessagePostSimUserHandler: Error getting user:", username, body.Content)
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
 	err = s.msgRepo.AddMessage(user, body.Content)
 	if err != nil {
+		log.Println("MessagePostSimUserHandler: Error adding message:", err, body.Content)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
