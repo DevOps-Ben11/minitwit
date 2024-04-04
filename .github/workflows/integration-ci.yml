@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+      - feature/react
 
 jobs:
   integration:
@@ -23,6 +24,7 @@ jobs:
         run: |
           pip install requests
           pip install pytest
+
       - name: start the database
         run: |
           docker run --name my_postgres_db -e POSTGRES_PASSWORD=mysecretpassword -d -p 5431:5432 postgres
@@ -36,3 +38,29 @@ jobs:
         run: python3 ./tests/refactored_minitwit_tests.py
       - name: Run simulator tests
         run: python3 ./tests/minitwit_sim_api_test.py
+
+      # Run e2e when every other integration is done
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.11.1"
+
+      - name: Install dependencies
+        working-directory: ./client
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        working-directory: ./client
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright tests
+        working-directory: ./client
+        # --project=chromium is required because right now the tests depend on each other
+        run: npx playwright test --project=chromium
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: client/playwright-report/
+          retention-days: 30

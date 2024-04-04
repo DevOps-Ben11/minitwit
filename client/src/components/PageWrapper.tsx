@@ -3,7 +3,7 @@ type Props = {
   children: React.ReactNode
 }
 
-export const PageWrapper = ({ flashMessage, children }: Props) => (
+export const PageWrapper = ({ flashMessage, children, ...props }: Props) => (
   <>
     {flashMessage && (
       <ul className='flashes'>
@@ -11,6 +11,8 @@ export const PageWrapper = ({ flashMessage, children }: Props) => (
       </ul>
     )}
 
-    <div className='body'>{children}</div>
+    <div className='body' {...props}>
+      {children}
+    </div>
   </>
 )

@@ -37,7 +37,10 @@ export const MyTimeline = () => {
   }
 
   return (
-    <PageWrapper flashMessage={flashMessage || (state && state.flashMessage)}>
+    <PageWrapper
+      data-testid='my-timeline-page'
+      flashMessage={flashMessage || (state && state.flashMessage)}
+    >
       <h2>My Timeline</h2>
 
       <TimelineSkeleton isLoading={isLoading}>
