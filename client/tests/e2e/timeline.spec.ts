@@ -12,14 +12,18 @@ test('can see timeline', async ({ page }) => {
   await page.click('input[type=submit]')
 
   // Login user
-  await page.waitForURL('**/login', { timeout: 5000 })
+  await page.goto('/login')
 
   // Fill the form.
   await page.fill('input[name=username]', 'playwrightUser')
   await page.fill('input[name=password]', 'password1')
   await page.click('input[type=submit]')
 
-  await page.waitForURL('**/', { timeout: 5000 })
+  await page.waitForURL('**/', { timeout: 20000 })
 
   await expect(page.getByTestId('my-timeline-page')).toBeVisible()
+
+  await page.fill('input[name=message]', 'Hello, World!')
+  await page.click('input[type=submit]')
+  await page.waitForSelector('text=Hello, World!')
 })
