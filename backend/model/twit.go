@@ -9,7 +9,7 @@ type User struct {
 
 type Message struct {
 	Message_id uint `gorm:"primaryKey"`
-	Author_id  uint
+	Author_id  uint `gorm:"index"`
 	Text       string
 	Pub_date   int64 `gorm:"autoCreateTime;index"`
 	Flagged    bool
