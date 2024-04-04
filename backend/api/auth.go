@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/DevOps-Ben11/minitwit/backend/model"
 )
@@ -15,24 +14,22 @@ type AuthHandlerFunc func(user *model.User, w http.ResponseWriter, r *http.Reque
 func (s *Server) protect(next AuthHandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, ok := s.GetCurrentUser(r)
+
 		if !ok || user == nil {
-			http.Redirect(w, r, UrlFor("public_timeline", ""), http.StatusFound)
+			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
+
 		next(user, w, r)
 	}
 }
 
 func (s *Server) Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if strings.HasPrefix(r.URL.Path, "/static/") {
-			next.ServeHTTP(w, r)
-			return
-		}
-
 		log.Printf("Authenticating request: %s %s\n", r.Method, r.URL)
 
 		session, err := s.store.Get(r, "auth")
+
 		if err != nil {
 			log.Println("Error getting session:", err)
 			w.WriteHeader(http.StatusInternalServerError)

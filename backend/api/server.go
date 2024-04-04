@@ -1,14 +1,12 @@
 package api
 
 import (
-	"html/template"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/DevOps-Ben11/minitwit/backend/model"
 	"github.com/DevOps-Ben11/minitwit/backend/repository"
-	"github.com/DevOps-Ben11/minitwit/backend/util"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/prometheus/client_golang/prometheus"
@@ -57,8 +55,7 @@ func (s *Server) GetStore() *sessions.CookieStore {
 }
 
 func (s *Server) InitRoutes() error {
-	s.r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../web/static"))))
-
+	// <------------- Simulation Routes ------------->
 	simR := s.r.PathPrefix("/sim").Subrouter()
 	simR.Use(s.StatusMonitoring)
 	simR.Use(s.LatestMiddleware)
@@ -70,23 +67,34 @@ func (s *Server) InitRoutes() error {
 	simR.HandleFunc("/fllws/{username}", s.simProtect(s.FollowGetSimHandler)).Methods("GET").Name("Get Follows")
 	simR.HandleFunc("/fllws/{username}", s.simProtect(s.FollowPostSimHandler)).Methods("POST").Name("Post Follows")
 
-	s.r.Use(s.Auth)
+	// <------------- API Routes ------------->
+	apiR := s.r.PathPrefix("/api").Subrouter()
+	apiR.Use(s.Auth)
+	apiR.HandleFunc("/register", s.RegisterHandler).Methods("POST")
+	apiR.HandleFunc("/login", s.LoginHandler).Methods("POST")
+	apiR.HandleFunc("/logout", s.LogoutHandler).Methods("POST")
 
-	s.r.HandleFunc("/register", s.RegisterHandler)
+	apiR.HandleFunc("/public", s.PublicTimelineHandler).Methods("GET")
+	apiR.HandleFunc("/add_message", s.protect(s.AddMessageHandler)).Methods("POST")
+	apiR.HandleFunc("/timeline", s.protect(s.TimelineHandler)).Methods("GET")
 
-	s.r.HandleFunc("/login", s.LoginHandler)
-	s.r.HandleFunc("/logout", s.LogoutHandler)
+	apiR.HandleFunc("/{username}/follow", s.protect(s.FollowHandler)).Methods("POST")
+	apiR.HandleFunc("/{username}/unfollow", s.protect(s.UnfollowHandler)).Methods("POST")
+	apiR.HandleFunc("/timeline/{username}", s.UserHandler).Methods("GET")
 
-	s.r.HandleFunc("/public", s.PublicTimelineHandler)
-	s.r.HandleFunc("/add_message", s.protect(s.AddMessageHandler)).Methods("POST")
-
+	// <------------- Static Routes ------------->
 	s.r.Handle("/metrics", promhttp.Handler())
 
-	s.r.HandleFunc("/{username}/follow", s.protect(s.FollowHandler))
-	s.r.HandleFunc("/{username}/unfollow", s.protect(s.UnfollowHandler))
-	s.r.HandleFunc("/{username}", s.UserHandler)
+	// Serve static files
+	s.r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("../client/dist/assets/"))))
 
-	s.r.HandleFunc("/", s.protect(s.TimelineHandler))
+	s.r.HandleFunc("/icon.ico", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "../client/dist/icon.ico")
+	})
+
+	s.r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "../client/dist/index.html")
+	})
 
 	return nil
 }
@@ -101,51 +109,11 @@ func (s *Server) InitDB() error {
 	)
 	return err
 }
-func (s *Server) PushFlashMessage(w http.ResponseWriter, r *http.Request, message string) {
-	session, err := s.store.Get(r, "auth")
-	if err != nil {
-		return
-	}
-
-	session.AddFlash(message)
-	session.Save(r, w)
-}
-
-func (s *Server) GetFlashedMessages(w http.ResponseWriter, r *http.Request) []model.FlashMessage {
-	session, err := s.store.Get(r, "auth")
-
-	if err != nil {
-		return []model.FlashMessage{}
-	}
-
-	flashes := session.Flashes()
-	var messages []model.FlashMessage
-
-	for _, v := range flashes {
-		messages = append(messages, model.FlashMessage{Message: v.(string)})
-	}
-
-	err = session.Save(r, w)
-	if err != nil {
-		log.Println("Error flash:", err)
-	}
-
-	return messages
-}
 
 func (s *Server) GetCurrentUser(r *http.Request) (user *model.User, ok bool) {
 	ctx := r.Context()
 	user, ok = ctx.Value(UserKey).(*model.User)
 	return user, ok
-}
-
-func (s *Server) GetFuncMap() template.FuncMap {
-	return template.FuncMap{
-		"UrlFor":             UrlFor,
-		"GetFlashedMessages": s.GetFlashedMessages,
-		"Gravatar":           util.Gravatar,
-		"Datetimeformat":     util.Datetimeformat,
-	}
 }
 
 func (s *Server) GetKeyVal(key string) (model.KeyVal, error) {

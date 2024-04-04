@@ -8,7 +8,6 @@ from contextlib import closing
 
 
 BASE_URL = 'http://localhost:5000/sim'
-DATABASE = "../tmp/minitwit.db"
 USERNAME = 'simulator'
 PWD = 'super_safe!'
 CREDENTIALS = ':'.join([USERNAME, PWD]).encode('ascii')
@@ -18,19 +17,6 @@ HEADERS = {'Connection': 'close',
            f'Authorization': f'Basic {ENCODED_CREDENTIALS}'}
 
 
-def init_db():
-    """Creates the database tables."""
-    with closing(sqlite3.connect(DATABASE)) as db:
-        with open("schema.sql") as fp:
-            db.cursor().executescript(fp.read())
-        db.commit()
-
-
-# Empty the database and initialize the schema again
-# Path(DATABASE).unlink()
-# init_db()
-
-
 def test_latest():
     # post something to update LATEST
     url = f"{BASE_URL}/register"
@@ -38,6 +24,7 @@ def test_latest():
     params = {'latest': 1337}
     response = requests.post(url, data=json.dumps(data),
                              params=params, headers=HEADERS)
+    
     assert response.ok
 
     # verify that latest was updated
