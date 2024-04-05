@@ -1,0 +1,36 @@
+version: '3.3'
+
+networks:
+  main:
+
+services:
+  prmetheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ../config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../prom_data:/prometheus
+    user: '0:0'
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - '9090:9090'
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "8080:3000"
+    volumes:
+      - ../grafana_data/:/var/lib/grafana
+      - ../config:/etc/grafana/provisioning/datasources
+    user: '0:0'
+
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - 3100:3100
+    volumes:
+      - ../loki_data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    user: '0:0'
+

@@ -3,5 +3,5 @@ scrape_configs:
     scrape_interval: 10s
     static_configs:
       - targets:
-          - minitwit-image:5000
-        # - localhost:5000
+          - 10.114.0.5:5000 # prod-1
+        # - localhost:5000 prod-2
