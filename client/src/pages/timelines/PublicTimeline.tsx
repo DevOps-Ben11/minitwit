@@ -26,7 +26,7 @@ export const PublicTimeline = () => {
   }, [])
 
   return (
-    <PageWrapper>
+    <PageWrapper data-testid='public-timeline-page'>
       <h2>Public Timeline</h2>
 
       <TimelineSkeleton isLoading={isLoading}>
