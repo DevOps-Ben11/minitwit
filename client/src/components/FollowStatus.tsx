@@ -1,19 +1,18 @@
 import { useEffect, useState } from 'react'
 import { User } from '@/services/api.types'
 import { followUser, unFollowUser } from '@/services/api'
+import { toast } from 'react-toastify'
 
 type Props = {
   user: User | undefined
   profile: User | undefined
   isByDefaultFollowing: boolean | undefined
-  setFlashMessage: (message: string) => void
 }
 
 export const FollowStatus = ({
   user,
   profile,
   isByDefaultFollowing = false,
-  setFlashMessage,
 }: Props) => {
   const [following, setFollowing] = useState<boolean>(false)
 
@@ -24,7 +23,7 @@ export const FollowStatus = ({
   const handleUnFollow = async (username: string) => {
     try {
       await unFollowUser(username)
-      setFlashMessage(`You are no longer following "${username}"`)
+      toast.success(`You are no longer following "${username}"`)
       setFollowing(false)
     } catch (error) {
       console.error(error)
@@ -34,7 +33,7 @@ export const FollowStatus = ({
   const handleFollow = async (username: string) => {
     try {
       await followUser(username)
-      setFlashMessage(`You are now following "${username}"`)
+      toast.success(`You are now following "${username}"`)
       setFollowing(true)
     } catch (error) {
       console.error(error)

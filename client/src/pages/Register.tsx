@@ -4,6 +4,7 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 import axios from 'axios'
 import { Input } from '@/components/Input'
 import { PageWrapper } from '@/components/PageWrapper'
+import { toast } from 'react-toastify'
 
 type FormValues = {
   username: string
@@ -29,11 +30,8 @@ export const Register = () => {
     try {
       await axios.post('/api/register', data)
 
-      navigate('/login', {
-        state: {
-          flashMessage: 'You were successfully registered and can login now',
-        },
-      })
+      toast.success('You were successfully registered and can login now')
+      navigate('/login')
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.data?.error_msg) {
         setError(error.response.data.error_msg)
