@@ -5,6 +5,7 @@ Vagrant.configure("2") do |config|
   config.ssh.private_key_path = '~/.ssh/id_rsa'
 
   config.vm.synced_folder "./scripts", "/minitwit/scripts", type: "rsync"
+  config.vm.synced_folder "./config", "/minitwit/config", type: "rsync"
 
   # By default, vagrant will sync the current directory to /vagrant. We do not want that
   config.vm.synced_folder ".", "/vagrant", disabled: true
