@@ -26,9 +26,17 @@ const Layout = ({ children }: Props) => {
       <div className='navigation'>
         {isAuthenticated ? (
           <>
-            <Link to='/'>my timeline</Link> |
-            <Link to='/public'>public timeline</Link> |
-            <button onClick={handleLogout}>sign out [{username}]</button>
+            <Link data-testid='my-timeline-link' to='/'>
+              my timeline
+            </Link>{' '}
+            |
+            <Link data-testid='public-timeline-link' to='/public'>
+              public timeline
+            </Link>{' '}
+            |
+            <button data-testid='sign-out' onClick={handleLogout}>
+              sign out [{username}]
+            </button>
           </>
         ) : (
           <>

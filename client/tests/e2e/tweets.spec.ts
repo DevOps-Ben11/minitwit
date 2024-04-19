@@ -12,7 +12,6 @@ test('user can tweet', async ({ page }) => {
   )
   await playwrightUser.login(USERS.default.username, USERS.default.password)
 
-  await page.fill('input[name=message]', 'Hello, World!')
-  await page.click('input[type=submit]')
+  await playwrightUser.tweet('Hello, World!')
   await page.waitForSelector('text=Hello, World!')
 })

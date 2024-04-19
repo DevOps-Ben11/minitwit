@@ -49,7 +49,11 @@ export const FollowStatus = ({
       return (
         <>
           You are currently following this user.{' '}
-          <button className='unfollow' onClick={() => handleUnFollow(username)}>
+          <button
+            data-testid='unfollow'
+            className='unfollow'
+            onClick={() => handleUnFollow(username)}
+          >
             Unfollow user
           </button>
           .
@@ -60,7 +64,11 @@ export const FollowStatus = ({
     return (
       <>
         You are not yet following this user.{' '}
-        <button className='follow' onClick={() => handleFollow(username)}>
+        <button
+          data-testid='follow'
+          className='follow'
+          onClick={() => handleFollow(username)}
+        >
           Follow user
         </button>
         .

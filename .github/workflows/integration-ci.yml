@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - main
-      - feature/react
 
 jobs:
   integration:
@@ -55,8 +54,7 @@ jobs:
 
       - name: Run Playwright tests
         working-directory: ./client
-        # --project=chromium is required because right now the tests depend on each other
-        run: npx playwright test --project=chromium
+        run: npx playwright test
 
       - uses: actions/upload-artifact@v4
         if: always()
