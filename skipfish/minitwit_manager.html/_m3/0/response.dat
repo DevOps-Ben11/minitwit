@@ -1,0 +1,22 @@
+HTTP/1.1 200 Partial Content
+Accept-Ranges: bytes
+Content-Length: 451
+Content-Range: bytes 0-450/451
+Content-Type: text/html; charset=utf-8
+Last-Modified: Thu, 04 Apr 2024 17:59:51 GMT
+Date: Fri, 19 Apr 2024 10:19:20 GMT
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/icon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MiniTwit</title>
+    <script type="module" crossorigin src="/assets/index-DOMSawVM.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CXRwShXL.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
