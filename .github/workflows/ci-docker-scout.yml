@@ -28,8 +28,6 @@ jobs:
           file: ./Dockerfile
           push: false
           tags: ${{ secrets.DOCKER_USERNAME }}/minitwit-image:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/minitwit-image:webbuildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/minitwit-image:webbuildcache,mode=max
 
       - name: Docker Scout
         id: docker-scout
