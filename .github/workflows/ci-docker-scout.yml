@@ -8,7 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -36,7 +35,5 @@ jobs:
         id: docker-scout
         uses: docker/scout-action@v1
         with:
-          command: scan
-          image: ${{ secrets.DOCKER_USERNAME }}/minitwit-image:latest
+          command: cves
           organization: ${{ secrets.DOCKER_USERNAME }}
-          format: json
