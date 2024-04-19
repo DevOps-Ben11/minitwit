@@ -32,7 +32,7 @@ jobs:
       - name: build and run minitwit
         run: |
           docker build -t minitwit-image .
-          docker run --network host -d -p 5000:5000 --env PSQL_CON_STR=postgresql://postgres:mysecretpassword@localhost:5431/postgres minitwit-image
+          docker run --network host -d -p 5000:5000 --env PSQL_CON_STR=postgresql://postgres:mysecretpassword@localhost:5431/postgres --env SECRET_KEY=BEN11GROUP minitwit-image
 
       - name: Run refactored tests
         run: python3 ./tests/refactored_minitwit_tests.py
