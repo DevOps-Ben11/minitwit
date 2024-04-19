@@ -34,10 +34,9 @@ jobs:
 
       - name: Docker Scout
         id: docker-scout
-        run: docker scout cves --only-package express
-        # uses: docker/scout-action@v1
-        # with:
-        #   command: compare
-        #   image: ${{ secrets.DOCKER_USERNAME }}/minitwit-image:latest
-        #   to-env: production
-        #   organization: ${{ secrets.DOCKER_USERNAME }}
+        uses: docker/scout-action@v1
+        with:
+          command: compare
+          image: ${{ secrets.DOCKER_USERNAME }}/minitwit-image:latest
+          # to-env: production
+          organization: ${{ secrets.DOCKER_USERNAME }}
