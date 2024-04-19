@@ -36,7 +36,7 @@ jobs:
         id: docker-scout
         uses: docker/scout-action@v1
         with:
-          command: compare
+          command: scan
           image: ${{ secrets.DOCKER_USERNAME }}/minitwit-image:latest
-          # to-env: production
           organization: ${{ secrets.DOCKER_USERNAME }}
+          format: json
