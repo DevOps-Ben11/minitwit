@@ -12,6 +12,7 @@ services:
       logging_jobname: "containerlogs"
     environment:
       - PSQL_CON_STR=${PSQL_CON_STR}
+      - SECRET_KEY=${SECRET_KEY}
     container_name: minitwit-image
 
     # Exposing port from container to host

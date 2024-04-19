@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/DevOps-Ben11/minitwit/backend/api"
 	"github.com/DevOps-Ben11/minitwit/backend/db"
@@ -12,7 +13,6 @@ import (
 
 const port = ":5000"
 const DEBUG = true
-const SECRET_KEY = "development key"
 
 func main() {
 	dotErr := godotenv.Load()
@@ -25,7 +25,13 @@ func main() {
 		log.Fatalln("Could not open Database", err)
 	}
 
-	var store = sessions.NewCookieStore([]byte(SECRET_KEY))
+	secretKey, ok := os.LookupEnv("SECRET_KEY")
+
+	if !ok {
+		panic("SECRET_KEY not found in env")
+	}
+
+	var store = sessions.NewCookieStore([]byte(secretKey))
 
 	userRepo := repository.CreateUserRepository(db)
 	msgRepo := repository.CreateMessageRepository(db)
