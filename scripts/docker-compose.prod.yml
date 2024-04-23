@@ -9,7 +9,7 @@ services:
     logging:
       driver: loki
       options:
-        loki-url: "http://loki:3100/loki/api/v1/push"
+        loki-url: "http://10.114.0.7:3100/loki/api/v1/push"
     environment:
       - PSQL_CON_STR=${PSQL_CON_STR}
     container_name: minitwit-image
