@@ -27,12 +27,12 @@ jobs:
 
       - name: start the database
         run: |
-          docker run --name my_postgres_db -e POSTGRES_PASSWORD=mysecretpassword -d -p 5431:5432 postgres
+          docker run --name my_postgres_db -e POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} -d -p 5431:5432 postgres
 
       - name: build and run minitwit
         run: |
           docker build -t minitwit-image .
-          docker run --network host -d -p 5000:5000 --env PSQL_CON_STR=postgresql://postgres:mysecretpassword@localhost:5431/postgres minitwit-image
+          docker run --network host -d -p 5000:5000 --env PSQL_CON_STR=${{ secrets.PSQL_CON_STR }} --env SECRET_KEY=${{ secrets.SECRET_KEY }} minitwit-image
 
       - name: Run refactored tests
         run: python3 ./tests/refactored_minitwit_tests.py
