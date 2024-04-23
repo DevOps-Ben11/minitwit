@@ -3,5 +3,5 @@ scrape_configs:
     scrape_interval: 10s
     static_configs:
       - targets:
-          - 10.114.0.5:5000 # prod-1
-        # - localhost:5000 prod-2
+          - 10.114.0.6:5000 # Worker 1
+          - 10.114.0.3:5000 # Worker 2
