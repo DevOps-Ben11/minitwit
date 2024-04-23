@@ -1,6 +1,7 @@
 import { useAuth } from '@/lib/hooks/useAuth'
 import axios from 'axios'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 type Props = {
   children: React.ReactNode
@@ -8,15 +9,11 @@ type Props = {
 
 const Layout = ({ children }: Props) => {
   const { isAuthenticated, username } = useAuth()
-  const navigate = useNavigate()
 
   const handleLogout = async () => {
     try {
       await axios.post('/api/logout')
-
-      navigate('/public', {
-        state: { flashMessage: 'You were logged out' },
-      })
+      toast.success('You were logged out')
     } catch (error) {
       console.error(error)
     }
@@ -29,9 +26,17 @@ const Layout = ({ children }: Props) => {
       <div className='navigation'>
         {isAuthenticated ? (
           <>
-            <Link to='/'>my timeline</Link> |
-            <Link to='/public'>public timeline</Link> |
-            <button onClick={handleLogout}>sign out [{username}]</button>
+            <Link data-testid='my-timeline-link' to='/'>
+              my timeline
+            </Link>{' '}
+            |
+            <Link data-testid='public-timeline-link' to='/public'>
+              public timeline
+            </Link>{' '}
+            |
+            <button data-testid='sign-out' onClick={handleLogout}>
+              sign out [{username}]
+            </button>
           </>
         ) : (
           <>
