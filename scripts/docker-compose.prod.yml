@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.8'
 
 networks:
   main:
@@ -6,6 +6,8 @@ networks:
 services:
   minitwit-image:
     image: ${DOCKER_USERNAME}/minitwit-image:latest
+
+    # Special driver needs to be installed on all hosts
     logging:
       driver: loki
       options:
@@ -21,14 +23,17 @@ services:
         - '5000:5000'
 
     deploy:
-      mode: replicated
-      replicas: 2
+      mode: global
       endpoint_mode: vip
       placement:
         constraints:
           - node.role == worker
       restart_policy:
         condition: any
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first # blue-green update strategy
       labels:
         - 'prometheus_job=ministack'
 
