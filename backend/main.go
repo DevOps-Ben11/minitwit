@@ -25,13 +25,26 @@ func main() {
 		log.Fatalln("Could not open Database", err)
 	}
 
-	secretKey, ok := os.LookupEnv("SECRET_KEY")
+	cookieHMAC, okHmac := os.LookupEnv("SECRET_COOKIE_HMAC")
+	cookieAES, okAes := os.LookupEnv("SECRET_COOKIE_AES")
 
-	if !ok {
-		panic("SECRET_KEY not found in env")
+	if !okHmac || !okAes {
+		panic("SECRET_COOKIE_HMAC or/and SECRET_COOKIE_AES not found in env")
 	}
 
-	var store = sessions.NewCookieStore([]byte(secretKey))
+	log.Println("SECRET_COOKIE_HMAC string: ", cookieHMAC)
+	log.Println("SECRET_COOKIE_AES string: ", cookieAES)
+
+	var store = sessions.NewCookieStore(
+		[]byte(cookieHMAC), []byte(cookieAES),
+
+		// To support legacy cookies
+		[]byte("development key"), nil,
+	)
+	store.Options.HttpOnly = true
+
+	// Must be turned on when HTTPS is made available on production
+	// store.Options.Secure = true
 
 	userRepo := repository.CreateUserRepository(db)
 	msgRepo := repository.CreateMessageRepository(db)

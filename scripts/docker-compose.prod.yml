@@ -12,7 +12,8 @@ services:
         loki-url: "http://10.114.0.7:3100/loki/api/v1/push"
     environment:
       - PSQL_CON_STR=${PSQL_CON_STR}
-      - SECRET_KEY=${SECRET_KEY}
+      - SECRET_COOKIE_HMAC=${SECRET_COOKIE_HMAC}
+      - SECRET_COOKIE_AES=${SECRET_COOKIE_AES}
     container_name: minitwit-image
 
     ports:

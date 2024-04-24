@@ -1,7 +1,7 @@
 package db
 
 import (
-	"fmt"
+	"log"
 	"os"
 
 	"gorm.io/driver/postgres"
@@ -15,7 +15,7 @@ func GetDB() (*gorm.DB, error) {
 		panic("PSQL_CON_STR not found in env")
 	}
 
-	fmt.Println("con string: ", conString)
+	log.Println("con string: ", conString)
 	db, err := gorm.Open(postgres.Open(conString), &gorm.Config{})
 
 	return db, err

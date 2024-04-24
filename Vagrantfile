@@ -30,7 +30,8 @@ Vagrant.configure("2") do |config|
     # Setup environment variables on the server
     server.vm.provision "shell", inline: 'echo "export DOCKER_USERNAME=' + "'" + ENV["DOCKER_USERNAME"] + "'" + '" >> ~/.bash_profile'
     server.vm.provision "shell", inline: 'echo "export PSQL_CON_STR=' + "'" + ENV["PSQL_CON_STR"] + "'" + '" >> ~/.bash_profile'
-    server.vm.provision "shell", inline: 'echo "export SECRET_KEY=' + "'" + ENV["SECRET_KEY"] + "'" + '" >> ~/.bash_profile'
+    server.vm.provision "shell", inline: 'echo "export SECRET_COOKIE_HMAC=' + "'" + ENV["SECRET_COOKIE_HMAC"] + "'" + '" >> ~/.bash_profile'
+    server.vm.provision "shell", inline: 'echo "export SECRET_COOKIE_AES=' + "'" + ENV["SECRET_COOKIE_AES"] + "'" + '" >> ~/.bash_profile'
 
     # # Give permissions to scripts
     server.vm.provision "shell", inline: 'chmod +x /minitwit/scripts/deploy.sh'

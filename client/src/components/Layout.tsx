@@ -1,7 +1,5 @@
 import { useAuth } from '@/lib/hooks/useAuth'
-import axios from 'axios'
-import { Link } from 'react-router-dom'
-import { toast } from 'react-toastify'
+import { Link, useNavigate } from 'react-router-dom'
 
 type Props = {
   children: React.ReactNode
@@ -9,11 +7,11 @@ type Props = {
 
 const Layout = ({ children }: Props) => {
   const { isAuthenticated, username } = useAuth()
+  const navigate = useNavigate()
 
   const handleLogout = async () => {
     try {
-      await axios.post('/api/logout')
-      toast.success('You were logged out')
+      navigate('/logout')
     } catch (error) {
       console.error(error)
     }

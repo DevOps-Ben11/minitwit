@@ -12,7 +12,8 @@ services:
       logging_jobname: "containerlogs"
     environment:
       - PSQL_CON_STR=${PSQL_CON_STR}
-      - SECRET_KEY=${SECRET_KEY}
+      - SECRET_COOKIE_HMAC=${SECRET_COOKIE_HMAC}
+      - SECRET_COOKIE_AES=${SECRET_COOKIE_AES}
     container_name: minitwit-image
 
     ports:

@@ -1,5 +1,6 @@
 import { useAuth } from '@/lib/hooks/useAuth'
-import axios from 'axios'
+import { axios } from '@/services/api'
+import { isAxiosError } from 'axios'
 import { useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { Input } from '@/components/Input'
@@ -30,7 +31,7 @@ export const Login = () => {
 
       toast.success('You were logged in')
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.data?.error_msg) {
+      if (isAxiosError(error) && error.response?.data?.error_msg) {
         setError(error.response.data.error_msg)
       }
     }
