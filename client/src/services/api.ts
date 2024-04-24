@@ -4,6 +4,8 @@ import {
   PublicTimelineResponse,
   TimelineResponse,
 } from './api.types'
+import { FormValues as RegisterBody } from '@/pages/Register'
+import { FormValues as LoginBody } from '@/pages/Login'
 
 export const axios = axiosService.create()
 
@@ -25,6 +27,12 @@ axios.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+
+export const registerUser = async (data: RegisterBody) =>
+  await axios.post('/api/register', data)
+
+export const loginUser = async (data: LoginBody) =>
+  await axios.post('/api/login', data)
 
 export const getUserTimeline = async (username: string) =>
   axios.get<UserTimelineResponse>(`/api/timeline/${username}`)

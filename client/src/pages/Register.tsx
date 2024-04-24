@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
-import { axios } from '@/services/api'
+import { registerUser } from '@/services/api'
 import { isAxiosError } from 'axios'
 import { Input } from '@/components/Input'
 import { PageWrapper } from '@/components/PageWrapper'
 import { toast } from 'react-toastify'
 
-type FormValues = {
+export type FormValues = {
   username: string
   email: string
   password: string
@@ -29,7 +29,7 @@ export const Register = () => {
     setError(null)
 
     try {
-      await axios.post('/api/register', data)
+      await registerUser(data)
 
       toast.success('You were successfully registered and can login now')
       navigate('/login')

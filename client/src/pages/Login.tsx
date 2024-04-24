@@ -1,5 +1,5 @@
 import { useAuth } from '@/lib/hooks/useAuth'
-import { axios } from '@/services/api'
+import { loginUser } from '@/services/api'
 import { isAxiosError } from 'axios'
 import { useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
@@ -7,7 +7,7 @@ import { Input } from '@/components/Input'
 import { PageWrapper } from '@/components/PageWrapper'
 import { toast } from 'react-toastify'
 
-type FormValues = {
+export type FormValues = {
   username: string
   email: string
   password: string
@@ -26,7 +26,7 @@ export const Login = () => {
     setError(null)
 
     try {
-      await axios.post('/api/login', data)
+      await loginUser(data)
       setUsername(data.username)
 
       toast.success('You were logged in')
