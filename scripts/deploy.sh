@@ -1,3 +1,4 @@
+# version: 1.0
 source ~/.bash_profile
 
 cd /minitwit/scripts
