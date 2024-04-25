@@ -1,0 +1,91 @@
+version: '3.8'
+
+networks:
+  main:
+
+services:
+  minitwit-image:
+    image: ${DOCKER_USERNAME}/minitwit-image:latest
+
+    # Special driver needs to be installed on all hosts
+    # https://grafana.com/docs/loki/latest/send-data/docker-driver/
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://10.114.0.7:3100/loki/api/v1/push"
+    environment:
+      - PSQL_CON_STR=${PSQL_CON_STR}
+      - SECRET_COOKIE_HMAC=${SECRET_COOKIE_HMAC}
+      - SECRET_COOKIE_AES=${SECRET_COOKIE_AES}
+    container_name: minitwit-image
+
+    ports:
+        - '80:5000'
+        - '5000:5000'
+
+    deploy:
+      mode: global
+      endpoint_mode: vip
+      placement:
+        constraints:
+          - node.role == worker
+      restart_policy:
+        condition: any
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first # blue-green update strategy
+      labels:
+        - 'prometheus_job=ministack'
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ../config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../prom_data:/prometheus
+    user: '0:0'
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - '9090:9090'
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "8080:3000"
+    volumes:
+      - ../grafana_data/:/var/lib/grafana
+      - ../config:/etc/grafana/provisioning/datasources
+    user: '0:0'
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - 3100:3100
+    volumes:
+      - ../loki_data:/loki
+
+    # https://github.com/grafana/loki/issues/6648
+    command: >-
+      -config.file=/etc/loki/local-config.yaml
+      -boltdb.shipper.compactor.ring.instance-addr=127.0.0.1
+      -distributor.ring.instance-addr=127.0.0.1
+      -frontend.instance-addr=127.0.0.1
+      -index-gateway.ring.instance-addr=127.0.0.1
+      -ingester.lifecycler.addr=127.0.0.1
+      -query-scheduler.ring.instance-addr=127.0.0.1
+      -ruler.ring.instance-addr=127.0.0.1
+    user: '0:0'
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager

@@ -1,7 +1,9 @@
 scrape_configs:
-  - job_name: minitwit
+  - job_name: "swarm-service"
     scrape_interval: 10s
-    static_configs:
-      - targets:
-          - 10.114.0.5:5000 # prod-1
-        # - localhost:5000 prod-2
+    dns_sd_configs:
+      - names:
+          - "tasks.ministack_minitwit-image"
+        type: "A"
+        port: 5000
+    metrics_path: "/metrics"

@@ -1,0 +1,8 @@
+HTTP/1.1 200 Partial Content
+Accept-Ranges: bytes
+Content-Length: 1406
+Content-Range: bytes 0-1405/1406
+Content-Type: image/vnd.microsoft.icon
+Last-Modified: Thu, 04 Apr 2024 17:59:50 GMT
+Date: Fri, 19 Apr 2024 11:26:05 GMT
+

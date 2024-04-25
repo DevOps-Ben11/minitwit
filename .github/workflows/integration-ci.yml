@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - main
-      - feature/react
 
 jobs:
   integration:
@@ -32,7 +31,7 @@ jobs:
       - name: build and run minitwit
         run: |
           docker build -t minitwit-image .
-          docker run --network host -d -p 5000:5000 --env PSQL_CON_STR=postgresql://postgres:mysecretpassword@localhost:5431/postgres minitwit-image
+          docker run --network host -d -p 5000:5000 --env PSQL_CON_STR=postgresql://postgres:mysecretpassword@localhost:5431/postgres --env SECRET_COOKIE_HMAC=supersecretpassw --env SECRET_COOKIE_AES=supersecretpassw  minitwit-image
 
       - name: Run refactored tests
         run: python3 ./tests/refactored_minitwit_tests.py
@@ -55,8 +54,7 @@ jobs:
 
       - name: Run Playwright tests
         working-directory: ./client
-        # --project=chromium is required because right now the tests depend on each other
-        run: npx playwright test --project=chromium
+        run: npx playwright test
 
       - uses: actions/upload-artifact@v4
         if: always()

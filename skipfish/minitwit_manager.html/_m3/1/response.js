@@ -1,0 +1,1 @@
+var res = {'data':'HTTP/1.1 200 OK\x0aContent-Type: text/html; charset=utf-8\x0aLast-Modified: Thu, 04 Apr 2024 17:59:51 GMT\x0aDate: Fri, 19 Apr 2024 10:19:21 GMT\x0aContent-Length: 115\x0a\x0a\x3cpre\x3e\x0a\x3ca href=\x22index-CXRwShXL.css\x22\x3eindex-CXRwShXL.css\x3c/a\x3e\x0a\x3ca href=\x22index-DOMSawVM.js\x22\x3eindex-DOMSawVM.js\x3c/a\x3e\x0a\x3c/pre\x3e\x0a'}

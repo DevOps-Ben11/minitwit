@@ -12,7 +12,6 @@ export const UserTimeline = () => {
   const navigate = useNavigate()
 
   const [timeline, setTimeline] = useState<UserTimelineResponse>()
-  const [flashMessage, setFlashMessage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -35,7 +34,7 @@ export const UserTimeline = () => {
   }, [username, navigate])
 
   return (
-    <PageWrapper flashMessage={flashMessage}>
+    <PageWrapper>
       <h2>{username}'s Timeline </h2>
 
       <TimelineSkeleton isLoading={isLoading}>
@@ -44,7 +43,6 @@ export const UserTimeline = () => {
             user={timeline?.User}
             profile={timeline?.Profile}
             isByDefaultFollowing={timeline?.Followed}
-            setFlashMessage={setFlashMessage}
           />
 
           <MessageList messages={timeline?.Messages} />

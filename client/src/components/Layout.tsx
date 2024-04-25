@@ -1,5 +1,4 @@
 import { useAuth } from '@/lib/hooks/useAuth'
-import axios from 'axios'
 import { Link, useNavigate } from 'react-router-dom'
 
 type Props = {
@@ -12,11 +11,7 @@ const Layout = ({ children }: Props) => {
 
   const handleLogout = async () => {
     try {
-      await axios.post('/api/logout')
-
-      navigate('/public', {
-        state: { flashMessage: 'You were logged out' },
-      })
+      navigate('/logout')
     } catch (error) {
       console.error(error)
     }
@@ -29,9 +24,17 @@ const Layout = ({ children }: Props) => {
       <div className='navigation'>
         {isAuthenticated ? (
           <>
-            <Link to='/'>my timeline</Link> |
-            <Link to='/public'>public timeline</Link> |
-            <button onClick={handleLogout}>sign out [{username}]</button>
+            <Link data-testid='my-timeline-link' to='/'>
+              my timeline
+            </Link>{' '}
+            |
+            <Link data-testid='public-timeline-link' to='/public'>
+              public timeline
+            </Link>{' '}
+            |
+            <button data-testid='sign-out' onClick={handleLogout}>
+              sign out [{username}]
+            </button>
           </>
         ) : (
           <>

@@ -1,0 +1,1 @@
+var res = {'data':'HTTP/1.1 404 Not Found\x0aContent-Type: text/plain; charset=utf-8\x0aX-Content-Type-Options: nosniff\x0aDate: Fri, 19 Apr 2024 11:26:05 GMT\x0aContent-Length: 19\x0a\x0a404 page not found\x0a/\x0d\x0a\x0d\x0a'}

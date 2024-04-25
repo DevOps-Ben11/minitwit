@@ -1,4 +1,3 @@
-import { useCookies } from 'react-cookie'
 import { useLocalStorage } from 'usehooks-ts'
 
 export const useAuth = () => {
@@ -6,11 +5,10 @@ export const useAuth = () => {
     'username',
     null
   )
-  const [auth] = useCookies(['auth'])
 
   return {
     username,
     setUsername,
-    isAuthenticated: Boolean(auth.auth),
+    isAuthenticated: Boolean(username),
   }
 }

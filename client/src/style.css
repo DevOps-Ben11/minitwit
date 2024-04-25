@@ -4,6 +4,22 @@ body {
   font-size: 14px;
 }
 
+:root {
+  --toastify-toast-bd-radius: 2px !important;
+  --toastify-toast-min-height: 20px !important;
+  --toastify-text-color-light: black !important;
+  --toastify-color-light: #b9f3ed !important;
+  --toastify-font-family: 'Trebuchet MS', sans-serif !important;
+}
+
+.Toastify__close-button {
+  opacity: 0.7 !important;
+}
+
+.Toastify__toast {
+  border: 1px solid #81cec6 !important;
+}
+
 a {
   color: #26776f;
 }
@@ -221,21 +237,6 @@ div.page div.twitbox-form > div:first-child {
 div.page div.twitbox input[type='submit'] {
   width: 70px;
   margin-left: 5px;
-}
-
-ul.flashes {
-  list-style: none;
-  margin: 10px 10px 0 10px;
-  padding: 0;
-}
-
-ul.flashes li {
-  background: #b9f3ed;
-  border: 1px solid #81cec6;
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  padding: 4px;
-  font-size: 13px;
 }
 
 div.error {

@@ -1,4 +1,4 @@
-import axios from 'axios'
+import { axios } from '@/services/api'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { Input } from './Input'
 

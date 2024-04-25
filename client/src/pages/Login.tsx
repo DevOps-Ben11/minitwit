@@ -1,12 +1,13 @@
 import { useAuth } from '@/lib/hooks/useAuth'
-import axios from 'axios'
+import { loginUser } from '@/services/api'
+import { isAxiosError } from 'axios'
 import { useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { Input } from '@/components/Input'
 import { PageWrapper } from '@/components/PageWrapper'
+import { toast } from 'react-toastify'
 
-type FormValues = {
+export type FormValues = {
   username: string
   email: string
   password: string
@@ -14,7 +15,6 @@ type FormValues = {
 
 export const Login = () => {
   const { setUsername } = useAuth()
-  const { state } = useLocation()
   const [error, setError] = useState<string | null>(null)
   const {
     register,
@@ -22,24 +22,23 @@ export const Login = () => {
     formState: { errors },
   } = useForm<FormValues>()
 
-  const navigate = useNavigate()
-
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setError(null)
 
     try {
-      await axios.post('/api/login', data)
+      await loginUser(data)
       setUsername(data.username)
-      navigate('/', { state: { flashMessage: 'You were logged in' } })
+
+      toast.success('You were logged in')
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.data?.error_msg) {
+      if (isAxiosError(error) && error.response?.data?.error_msg) {
         setError(error.response.data.error_msg)
       }
     }
   }
 
   return (
-    <PageWrapper flashMessage={state && state.flashMessage}>
+    <PageWrapper>
       <h2>Sign in</h2>
       {error && (
         <div className='error'>
