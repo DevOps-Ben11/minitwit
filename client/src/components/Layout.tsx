@@ -47,7 +47,7 @@ const Layout = ({ children }: Props) => {
 
       {children}
 
-      <div className='footer'>MiniTwit &mdash; A Go - React Application</div>
+      <div className='footer'>MiniTwit v2 &mdash; A Go - React Application</div>
     </div>
   )
 }
