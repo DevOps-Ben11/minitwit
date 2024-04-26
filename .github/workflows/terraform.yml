@@ -25,4 +25,8 @@ jobs:
       working-directory: ./terraform  
       env:
         TF_DO_TOKEN: ${{ secrets.TF_DO_TOKEN }}
+        TF_DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        TF_PSQL_CON_STR: ${{ secrets.PSQL_CON_STR }}
+        TF_SECRET_COOKIE_AES: ${{ secrets.SECRET_COOKIE_AES }}
+        TF_SECRET_COOKIE_HMAC: ${{ secrets.SECRET_COOKIE_HMAC }}
       run: terraform apply -auto-approve

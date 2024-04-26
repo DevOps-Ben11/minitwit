@@ -22,23 +22,15 @@ variable "pvt_key" {
 }
 
 variable "SECRET_COOKIE_HMAC" {
-  type    = string  
-  default = "supersecretpassw"
 }
 
 variable "SECRET_COOKIE_AES" {
-  type    = string  
-  default = "supersecretpassw"
 }
 
 variable "PSQL_CON_STR" {
-  type    = string  
-  default = ""
 }
 
 variable "DOCKER_USERNAME" {
-  type    = string
-  default = "hrallil"
 }
 
 data "digitalocean_ssh_key" "Viktoria" {
