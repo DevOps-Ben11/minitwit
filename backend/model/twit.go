@@ -9,10 +9,10 @@ type User struct {
 
 type Message struct {
 	Message_id uint `gorm:"primaryKey"`
-	Author_id  uint `gorm:"index"`
+	Author_id  uint `gorm:"index;index:composite"`
 	Text       string
-	Pub_date   int64 `gorm:"autoCreateTime;index"`
-	Flagged    bool
+	Pub_date   int64 `gorm:"autoCreateTime;index;index:composite,sort:desc"`
+	Flagged    bool  `gorm:"index:composite"`
 }
 
 type Follower struct {
