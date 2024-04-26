@@ -1,7 +1,9 @@
 name: Terraform
 
 on:
-  workflow_dispatch:
+    push:
+        branches:
+          - terraform
 
 jobs:
   terraform:
