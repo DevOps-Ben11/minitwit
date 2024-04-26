@@ -53,6 +53,9 @@ resource "digitalocean_droplet" "manager" {
       "mkdir /minitwit",
       "mkdir /minitwit/scripts",
       "mkdir /minitwit/config", 
+      "docker swarm init --advertise-addr ${self.ipv4_address_private}",
+      "SWARM_TOKEN=$(docker swarm join-token -q worker)",
+      "echo $SWARM_TOKEN > /tmp/swarm_token",
     ]
 
     connection {
@@ -62,6 +65,7 @@ resource "digitalocean_droplet" "manager" {
       host        = self.ipv4_address
     }
   }
+
   provisioner "file" {
     source      = "../config"
     destination = "/minitwit"
@@ -106,6 +110,21 @@ resource "digitalocean_droplet" "worker-1" {
   region   = "fra1"
   size     = "s-1vcpu-1gb"
   ssh_keys = [data.digitalocean_ssh_key.Viktoria.id]
+
+  connection {
+      host        = self.ipv4_address
+      user        = "root"
+      type        = "ssh"
+      private_key = file(var.pvt_key)
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "mkdir -p /tmp",
+      "scp -i ${var.pvt_key} root@${digitalocean_droplet.manager.ipv4_address_private}:/tmp/swarm_token /tmp",
+      "docker swarm join --token \"$(cat /tmp/swarm_token)\" ${digitalocean_droplet.manager.ipv4_address_private}:2377",
+    ]
+  }
 }
 
 resource "digitalocean_droplet" "worker-2" {
@@ -114,6 +133,21 @@ resource "digitalocean_droplet" "worker-2" {
   region   = "fra1"
   size     = "s-1vcpu-1gb"
   ssh_keys = [data.digitalocean_ssh_key.Viktoria.id]
+
+  connection {
+      host        = self.ipv4_address
+      user        = "root"
+      type        = "ssh"
+      private_key = file(var.pvt_key)
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "mkdir -p /tmp",
+      "scp -i ${var.pvt_key} root@${digitalocean_droplet.manager.ipv4_address_private}:/tmp/swarm_token /tmp",
+      "docker swarm join --token \"$(cat /tmp/swarm_token)\" ${digitalocean_droplet.manager.ipv4_address_private}:2377",
+    ]
+  }
 }
 
 
