@@ -1,0 +1,19 @@
+name: Terraform
+
+on:
+  workflow_dispatch:
+
+jobs:
+  terraform:
+    name: Terraform 
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Terraform Apply
+      env:
+        TF_DO_TOKEN: ${{ secrets.TF_DO_TOKEN }}
+      run: terraform apply -auto-approve

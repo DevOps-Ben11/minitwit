@@ -14,8 +14,6 @@ provider "digitalocean" {
 }
 
 variable "do_token" {
-  type    = string  
-  default = ""
 }
 
 variable "pvt_key" {
