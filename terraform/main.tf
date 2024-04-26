@@ -118,12 +118,32 @@ resource "digitalocean_droplet" "worker-1" {
       private_key = file(var.pvt_key)
   }
 
+  provisioner "file" {
+    source      = var.pvt_key
+    destination = "/root/.ssh/id_rsa"
+    
+    connection {
+      host        = self.ipv4_address
+      user        = "root"
+      type        = "ssh"
+      private_key = file(var.pvt_key)
+    }
+  }
+
   provisioner "remote-exec" {
     inline = [
+      "chmod 600 /root/.ssh/id_rsa", 
       "mkdir -p /tmp",
-      "scp -i ${var.pvt_key} root@${digitalocean_droplet.manager.ipv4_address_private}:/tmp/swarm_token /tmp",
+      "scp -i /root/.ssh/id_rsa root@${digitalocean_droplet.manager.ipv4_address_private}:/tmp/swarm_token /tmp",
       "docker swarm join --token \"$(cat /tmp/swarm_token)\" ${digitalocean_droplet.manager.ipv4_address_private}:2377",
     ]
+
+    connection {
+      type        = "ssh"
+      user        = "root"
+      private_key = file(var.pvt_key)
+      host        = self.ipv4_address
+    }
   }
 }
 
@@ -147,6 +167,13 @@ resource "digitalocean_droplet" "worker-2" {
       "scp -i ${var.pvt_key} root@${digitalocean_droplet.manager.ipv4_address_private}:/tmp/swarm_token /tmp",
       "docker swarm join --token \"$(cat /tmp/swarm_token)\" ${digitalocean_droplet.manager.ipv4_address_private}:2377",
     ]
+
+    connection {
+      type        = "ssh"
+      user        = "root"
+      private_key = file(var.pvt_key)
+      host        = self.ipv4_address
+    }
   }
 }
 
