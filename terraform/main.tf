@@ -37,6 +37,10 @@ data "digitalocean_ssh_key" "Viktoria" {
   name = "Viktoria"
 }
 
+data "digitalocean_droplet" "manager" {
+  name = digitalocean_droplet.manager.name
+}
+
 resource "digitalocean_droplet" "manager" {
   image    = "docker-20-04"
   name     = "manager"
@@ -44,63 +48,40 @@ resource "digitalocean_droplet" "manager" {
   size     = "s-1vcpu-1gb"
   ssh_keys = [data.digitalocean_ssh_key.Viktoria.id]
 
+  connection {
+    type        = "ssh"
+    user        = "root"
+    private_key = file(var.pvt_key)
+    host        = self.ipv4_address
+  }
+
   provisioner "remote-exec" {
     inline = [
-      "echo 'export DOCKER_USERNAME=${var.DOCKER_USERNAME}' >> ~/.bash_profile",
-      "echo 'export PSQL_CON_STR=${var.PSQL_CON_STR}' >> ~/.bash_profile",
-      "echo 'export SECRET_COOKIE_HMAC=${var.SECRET_COOKIE_HMAC}' >> ~/.bash_profile",
-      "echo 'export SECRET_COOKIE_AES=${var.SECRET_COOKIE_AES}' >> ~/.bash_profile",
-      "mkdir /minitwit",
-      "mkdir /minitwit/scripts",
-      "mkdir /minitwit/config", 
-      "docker swarm init --advertise-addr ${self.ipv4_address_private}",
-      "SWARM_TOKEN=$(docker swarm join-token -q worker)",
-      "echo $SWARM_TOKEN > /tmp/swarm_token",
+      "mkdir -p /minitwit",
     ]
-
-    connection {
-      type        = "ssh"
-      user        = "root"
-      private_key = file(var.pvt_key)
-      host        = self.ipv4_address
-    }
   }
 
   provisioner "file" {
     source      = "../config"
     destination = "/minitwit"
-
-    connection {
-      host        = self.ipv4_address
-      user        = "root"
-      type        = "ssh"
-      private_key = file(var.pvt_key)
-    }
   }
 
   provisioner "file" {
     source      = "../scripts"
     destination = "/minitwit"
-
-    connection {
-      host        = self.ipv4_address
-      user        = "root"
-      type        = "ssh"
-      private_key = file(var.pvt_key)
-    }
   }
 
   provisioner "remote-exec" {
     inline = [
-      "chmod +x /minitwit/scripts/deploy.sh" 
+      "chmod +x /minitwit/scripts/deploy.sh",  
+      "echo 'export DOCKER_USERNAME=${var.DOCKER_USERNAME}' >> ~/.bash_profile",
+      "echo 'export PSQL_CON_STR=${var.PSQL_CON_STR}' >> ~/.bash_profile",
+      "echo 'export SECRET_COOKIE_HMAC=${var.SECRET_COOKIE_HMAC}' >> ~/.bash_profile",
+      "echo 'export SECRET_COOKIE_AES=${var.SECRET_COOKIE_AES}' >> ~/.bash_profile",
+      "docker swarm init --advertise-addr ${self.ipv4_address_private}",
+      "SWARM_TOKEN=$(docker swarm join-token -q worker)",
+      "echo $SWARM_TOKEN > /tmp/swarm_token",
     ]
-
-    connection {
-      type        = "ssh"
-      user        = "root"
-      private_key = file(var.pvt_key)
-      host        = self.ipv4_address
-    }
   }
 }
 
@@ -112,38 +93,24 @@ resource "digitalocean_droplet" "worker-1" {
   ssh_keys = [data.digitalocean_ssh_key.Viktoria.id]
 
   connection {
-      host        = self.ipv4_address
-      user        = "root"
-      type        = "ssh"
-      private_key = file(var.pvt_key)
+    type        = "ssh"
+    user        = "root"
+    private_key = file(var.pvt_key)
+    host        = self.ipv4_address
   }
 
   provisioner "file" {
     source      = var.pvt_key
     destination = "/root/.ssh/id_rsa"
-    
-    connection {
-      host        = self.ipv4_address
-      user        = "root"
-      type        = "ssh"
-      private_key = file(var.pvt_key)
-    }
   }
 
   provisioner "remote-exec" {
     inline = [
       "chmod 600 /root/.ssh/id_rsa", 
       "mkdir -p /tmp",
-      "scp -i /root/.ssh/id_rsa root@${digitalocean_droplet.manager.ipv4_address_private}:/tmp/swarm_token /tmp",
-      "docker swarm join --token \"$(cat /tmp/swarm_token)\" ${digitalocean_droplet.manager.ipv4_address_private}:2377",
+      "scp -o StrictHostKeyChecking=no -o BatchMode=yes -i /root/.ssh/id_rsa root@${data.digitalocean_droplet.manager.ipv4_address}:/tmp/swarm_token /tmp",
+      "docker swarm join --token \"$(cat /tmp/swarm_token)\" ${data.digitalocean_droplet.manager.ipv4_address_private}:2377",
     ]
-
-    connection {
-      type        = "ssh"
-      user        = "root"
-      private_key = file(var.pvt_key)
-      host        = self.ipv4_address
-    }
   }
 }
 
@@ -155,26 +122,23 @@ resource "digitalocean_droplet" "worker-2" {
   ssh_keys = [data.digitalocean_ssh_key.Viktoria.id]
 
   connection {
-      host        = self.ipv4_address
-      user        = "root"
-      type        = "ssh"
-      private_key = file(var.pvt_key)
+    type        = "ssh"
+    user        = "root"
+    private_key = file(var.pvt_key)
+    host        = self.ipv4_address
+  }
+
+  provisioner "file" {
+    source      = var.pvt_key
+    destination = "/root/.ssh/id_rsa"
   }
 
   provisioner "remote-exec" {
     inline = [
+      "chmod 600 /root/.ssh/id_rsa", 
       "mkdir -p /tmp",
-      "scp -i ${var.pvt_key} root@${digitalocean_droplet.manager.ipv4_address_private}:/tmp/swarm_token /tmp",
-      "docker swarm join --token \"$(cat /tmp/swarm_token)\" ${digitalocean_droplet.manager.ipv4_address_private}:2377",
+      "scp -o StrictHostKeyChecking=no -o BatchMode=yes -i /root/.ssh/id_rsa root@${data.digitalocean_droplet.manager.ipv4_address}:/tmp/swarm_token /tmp",
+      "docker swarm join --token \"$(cat /tmp/swarm_token)\" ${data.digitalocean_droplet.manager.ipv4_address_private}:2377",
     ]
-
-    connection {
-      type        = "ssh"
-      user        = "root"
-      private_key = file(var.pvt_key)
-      host        = self.ipv4_address
-    }
   }
 }
-
-
