@@ -71,6 +71,21 @@ resource "digitalocean_droplet" "manager" {
     destination = "/minitwit"
   }
 
+  provisioner "file" {
+    source      = "../grafana_data"
+    destination = "/minitwit"
+  }
+
+  provisioner "file" {
+    source      = "../loki_data"
+    destination = "/minitwit"
+  }
+
+  provisioner "file" {
+    source      = "../prom_data"
+    destination = "/minitwit"
+  }
+
   provisioner "remote-exec" {
     inline = [
       "chmod +x /minitwit/scripts/deploy.sh",  
@@ -97,6 +112,41 @@ locals {
 resource "digitalocean_droplet" "worker-1" {
   image    = "docker-20-04"
   name     = "worker-1"
+  region   = "fra1"
+  size     = "s-1vcpu-1gb"
+  ssh_keys = [data.digitalocean_ssh_key.Viktoria.id]
+
+  connection {
+    type        = "ssh"
+    user        = "root"
+    private_key = file(var.pvt_key)
+    host        = self.ipv4_address
+  }
+
+  provisioner "file" {
+    source      = var.pvt_key
+    destination = "/root/.ssh/id_rsa"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod 600 /root/.ssh/id_rsa",
+      "sudo ufw allow 2377/tcp",
+      "sudo ufw allow 7946/tcp",
+      "sudo ufw allow 7946/udp",
+      "sudo ufw allow 4789/udp",
+      "sudo ufw reload",
+      "mkdir -p /tmp",
+      "scp -o StrictHostKeyChecking=no -o BatchMode=yes -i /root/.ssh/id_rsa root@${local.manager_ip}:/tmp/swarm_token /tmp",
+      "SWARM_TOKEN=$(cat /tmp/swarm_token)",
+      "docker swarm join --token $SWARM_TOKEN ${local.manager_ip}:2377",
+    ]
+  }
+}
+
+resource "digitalocean_droplet" "worker-2" {
+  image    = "docker-20-04"
+  name     = "worker-2"
   region   = "fra1"
   size     = "s-1vcpu-1gb"
   ssh_keys = [data.digitalocean_ssh_key.Viktoria.id]
