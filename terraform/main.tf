@@ -88,6 +88,7 @@ resource "digitalocean_droplet" "manager" {
 
   provisioner "remote-exec" {
     inline = [
+      "docker plugin install --grant-all-permissions grafana/loki-docker-driver:latest --alias loki",
       "chmod +x /minitwit/scripts/deploy.sh",  
       "echo 'export DOCKER_USERNAME=${var.DOCKER_USERNAME}' >> ~/.bash_profile",
       "echo 'export PSQL_CON_STR=${var.PSQL_CON_STR}' >> ~/.bash_profile",
@@ -130,6 +131,7 @@ resource "digitalocean_droplet" "worker-1" {
 
   provisioner "remote-exec" {
     inline = [
+      "docker plugin install --grant-all-permissions grafana/loki-docker-driver:latest --alias loki",
       "chmod 600 /root/.ssh/id_rsa",
       "sudo ufw allow 2377/tcp",
       "sudo ufw allow 7946/tcp",
@@ -165,6 +167,7 @@ resource "digitalocean_droplet" "worker-2" {
 
   provisioner "remote-exec" {
     inline = [
+      "docker plugin install --grant-all-permissions grafana/loki-docker-driver:latest --alias loki",
       "chmod 600 /root/.ssh/id_rsa",
       "sudo ufw allow 2377/tcp",
       "sudo ufw allow 7946/tcp",
