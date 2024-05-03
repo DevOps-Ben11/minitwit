@@ -2,17 +2,17 @@ package model
 
 type User struct {
 	User_id  uint   `gorm:"primaryKey"`
-	Username string `gorm:"index"`
+	Username string `gorm:"index;unique"`
 	Email    string
 	Pw_hash  string
 }
 
 type Message struct {
 	Message_id uint `gorm:"primaryKey"`
-	Author_id  uint `gorm:"index"`
+	Author_id  uint `gorm:"index;index:composite"`
 	Text       string
-	Pub_date   int64 `gorm:"autoCreateTime;index"`
-	Flagged    bool
+	Pub_date   int64 `gorm:"autoCreateTime;index;index:composite,sort:desc"`
+	Flagged    bool  `gorm:"index:composite"`
 }
 
 type Follower struct {

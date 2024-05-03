@@ -74,8 +74,16 @@ func (repo UserRepository) InsertUser(username string, email string, password st
 func (repo UserRepository) GetUserTimeline(user_id uint) ([]model.RenderMessage, error) {
 	var messages []model.RenderMessage
 
-	err := repo.db.Model(&model.Message{}).Joins("LEFT JOIN users ON users.user_id = messages.author_id").Where("messages.flagged = ? AND (users.user_id = ? OR users.user_id IN (?))", false, user_id,
-		repo.db.Model(&model.Follower{}).Where("who_id = ?", user_id).Select("whom_id")).Order("messages.pub_date DESC").Limit(util.PER_PAGE).Select("messages.*", "users.*").Find(&messages).Error
+	var followedIDs []uint
+
+	err := repo.db.Model(&model.Follower{}).Where("who_id = ?", user_id).Select("whom_id").Find(&followedIDs).Error
+	if err != nil {
+		return nil, err
+	}
+
+	followedIDs = append(followedIDs, user_id)
+
+	err = repo.db.Model(&model.Message{}).Joins("LEFT JOIN users ON users.user_id = messages.author_id").Where("messages.flagged = ? AND messages.author_id IN (?)", false, followedIDs).Order("messages.pub_date DESC").Limit(util.PER_PAGE).Select("messages.*", "users.*").Find(&messages).Error
 
 	if err != nil {
 		return nil, err
