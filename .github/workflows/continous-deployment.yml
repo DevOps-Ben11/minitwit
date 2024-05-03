@@ -45,7 +45,7 @@ jobs:
         run: >
           scp -i ~/.ssh/do_ssh_key
           -o StrictHostKeyChecking=no
-          -r ./scripts root@138.68.126.8:/minitwit
+          -r ./scripts root@157.230.78.167:/minitwit
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
 
@@ -53,14 +53,14 @@ jobs:
         run: >
           scp -i ~/.ssh/do_ssh_key
           -o StrictHostKeyChecking=no
-          -r ./config root@138.68.126.8:/minitwit
+          -r ./config root@157.230.78.167:/minitwit
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
 
       - name: Deploy to server
         # Configure the ~./bash_profile and deploy.sh file on the Vagrantfile
         run: >
-          ssh root@138.68.126.8
+          ssh root@157.230.78.167
           -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
           '/minitwit/scripts/deploy.sh'
 
