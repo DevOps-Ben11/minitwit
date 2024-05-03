@@ -2,7 +2,7 @@ package model
 
 type User struct {
 	User_id  uint   `gorm:"primaryKey"`
-	Username string `gorm:"index"`
+	Username string `gorm:"index;unique"`
 	Email    string
 	Pw_hash  string
 }
