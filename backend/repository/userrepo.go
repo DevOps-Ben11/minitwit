@@ -85,9 +85,6 @@ func (repo UserRepository) GetUserTimeline(user_id uint) ([]model.RenderMessage,
 
 	err = repo.db.Model(&model.Message{}).Joins("LEFT JOIN users ON users.user_id = messages.author_id").Where("messages.flagged = ? AND messages.author_id IN (?)", false, followedIDs).Order("messages.pub_date DESC").Limit(util.PER_PAGE).Select("messages.*", "users.*").Find(&messages).Error
 
-	// err = repo.db.Model(&model.Message{}).Joins("LEFT JOIN users ON users.user_id = messages.author_id").Where("messages.flagged = ? AND (users.user_id = ? OR users.user_id IN (?))", false, user_id,
-	// 	repo.db.Model(&model.Follower{}).Where("who_id = ?", user_id).Select("whom_id")).Order("messages.pub_date DESC").Limit(util.PER_PAGE).Select("messages.*", "users.*").Find(&messages).Error
-
 	if err != nil {
 		return nil, err
 	}
