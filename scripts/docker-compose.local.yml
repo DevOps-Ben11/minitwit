@@ -11,9 +11,9 @@ services:
       logging: "promtail"
       logging_jobname: "containerlogs"
     environment:
-      - PSQL_CON_STR=${PSQL_CON_STR}
-      - SECRET_COOKIE_HMAC=${SECRET_COOKIE_HMAC}
-      - SECRET_COOKIE_AES=${SECRET_COOKIE_AES}
+      - PSQL_CON_STR=postgresql://postgres:mysecretpassword@host.docker.internal:5431/postgres
+      - SECRET_COOKIE_HMAC=verysecretkeyonlyfordevelopment!
+      - SECRET_COOKIE_AES=verysecretkeyonlyfordevelopment!
     container_name: minitwit-image
 
     ports:
