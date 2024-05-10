@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: CI Docker scout
+    name: Docker scout
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
