@@ -1,0 +1,96 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{enumitem, amssymb }
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\graphicspath{ {./img/} }
+%bibliography
+\usepackage[backend=biber,style=numeric,sorting=none, maxbibnames=99]{biblatex}
+\addbibresource{Bibliography.bib}
+%Tommy's suggestion
+%\usepackage[style=numeric,sorting=none]{biblatex}
+%\addbibresource{Source.bib} 
+\usepackage{courier}
+\usepackage{color}
+\usepackage{listings, xcolor}
+\usepackage{tabularx}
+\usepackage{comment}
+\usepackage{verbatim}
+\usepackage{placeins}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{caption}
+\usepackage{gensymb}
+\usepackage[T1]{fontenc}
+\usepackage{float}
+\usepackage{url}
+\renewcommand{\baselinestretch}{1.2}
+\usepackage{subcaption} 
+\usepackage{array}
+\usepackage{makecell}
+\usepackage{csvsimple}
+\usepackage[legalpaper, margin=1in]{geometry}
+%\usepackage{natbib} %Imports biblatex package
+%\addbibresource{biblografi.bib} %Import the bibliography file
+\usepackage{hyperref}
+\hypersetup{pdfborder = {0 0 0}}
+\usepackage{courier} %% Sets font for listing as Courier.
+\usepackage{scalerel}
+\usepackage{makecell}
+\usepackage{tabularx}
+\usepackage{titling}
+\lstset{
+    tabsize = 4, %% set tab space width
+    showstringspaces = false, %% prevent space marking in strings, string is defined as the text that is generally printed directly to the console
+    numbers = left, %% display line numbers on the left
+    commentstyle = \color{teal}, %% set comment color
+    keywordstyle = \color{blue}, %% set keyword color
+    numberstyle = \color{red},
+    stringstyle = \color{red}, %% set string color
+    rulecolor = \color{black}, %% set frame color to avoid being affected by text color
+    basicstyle = \small \ttfamily , %% set listing font and size
+    breaklines = true, %% enable line breaking
+    numberstyle = \tiny
+}
+\setlength{\parindent}{0pt}
+
+\title{%
+\includegraphics[width=345.0pt]{ITU_logo_UK jpg.jpg}
+\vspace{0.5cm}\\
+{\Huge \textbf{DevOps, Software Evolution and Software Maintenance}}\\
+\vspace{0.5cm}
+Course code: KSDSESM1KU
+}
+
+\author{Andreas Just Petersen - anjp@itu.dk \\ Mathias M. A. Larsen - mathl@itu.dk \\ Rokas Kasperavicius - rokk@itu.dk \\ Matteo Claude Philippe Faura Behague - mcfa@itu.dk \\ Viktoria Hopeberg - anam@itu.dk}
+
+
+\date{
+\textbf{Github page}: \href{https://github.com/DevOps-Ben11/minitwit}{https://github.com/DevOps-Ben11/minitwit}\\
+\textbf{Minitwit page}: \href{http://minitwit.fun}{http://minitwit.fun}
+\\
+\vspace{1cm}
+\textbf{Spring 2024}
+}
+
+\begin{document}
+
+\begin{titlingpage}
+    \maketitle
+\end{titlingpage}
+
+\newpage
+\tableofcontents
+\newpage
+
+\include{System_Perspective}
+\include{Process_perspective}
+\include{Lessons_Learned_Perspective}
+
+\include{Conclusion}
+
+\printbibliography
+
+\end{document}
