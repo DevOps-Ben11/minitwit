@@ -1,0 +1,14 @@
+\section{Conclusion}
+The final application is optimised, scalable and has great developer experience. First of all, from the developer perspective, the code released to production  has to go through mandatory code review and multiple CI actions. This includes automatic security analysis, E2E tests, multiple static code analyses and different unit tests for both simulation and user APIs. This gives the developer confidence that the code in production will not cause any issues.
+\\
+\\
+The code is released automatically through CD pipeline with automatically created release notes on GitHub. On DigitalOcean VPS we used a docker swarm which updates the new code using blue-green strategy ensuring that the system is always running even during production release.
+\\
+\\
+For the web application, we have implemented a scalable Go-React system which was optimized with multiple database indices to ensure fast APIs even after a full simulation. The application tracks all logs and metrics of different parameters and is configured to alert our communication channel if the docker swarm crashed and could not heal itself up again. Our precision to deliver new features reliably was also shown on the simulation error list, with our group only collecting 2079 total errors throughout the whole simulation running time.
+\\
+\\
+Furthermore, security has been taken into consideration throughout the development as well. Even though we did not implement HTTPS, we took measures to ensure secure usability of our web application. A few examples are the running security CI actions, prevention against SQL injections, authenticating/encrypting authentication cookies and etc.
+\\
+\\
+Lastly, the synthetic web analysis through PageSpeed Insights showed overall performance of 78 points on desktop and 95 on mobile out of 100 points\footnote{\url{https://pagespeed.web.dev/analysis/http-minitwit-fun/86vwkx54ur?form_factor=desktop}}. This gives a general idea of the website's loading times. Even though synthetic web loading times do not represent the actual loading times for a user, we could optimise different aspects of the system's total response time.
